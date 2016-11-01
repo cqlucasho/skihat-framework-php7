@@ -1,2 +1,2 @@
 # skihat-framework-php7
-skihat based php7
+skihat base on php7
