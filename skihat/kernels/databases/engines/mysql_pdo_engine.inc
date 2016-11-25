@@ -31,7 +31,7 @@ class MysqlPdoEngine extends PdoEngine {
     /**
      * @see PdoEngine::_fetchTableSchema
      */
-    protected function _fetchTableSchema($table) {
+    protected function _fetchTableSchema(string $table) {
         # 生成查询命令。
         $cmd = 'show columns from ' . $this->sqlBuilder->safeName($table);
         $columns = $this->query($cmd, array(), self::FETCH_STYLE_ASSOC);
@@ -76,7 +76,7 @@ class MysqlPdoEngine extends PdoEngine {
     /**
      * @see PdoEngine::_createBuilder
      */
-    protected function _createBuilder() {
+    protected function _createBuilder() : MySqlBuilder {
         return new MySqlBuilder();
     }
 }
@@ -90,7 +90,7 @@ class MySqlBuilder extends SqlBuilder {
     /**
      * @see SqlBuilder::safeName
      */
-    public function safeName($name) {
+    public function safeName(string $name) {
         return str_replace('.', '`.`', "`$name`");
     }
 }

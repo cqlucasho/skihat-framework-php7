@@ -72,7 +72,7 @@ class EmailMessageEngine implements IMessageEngine {
      *
      * @return         mixed
      */
-    protected function _sendMail($to, $subject, $message, $cc = false) {
+    protected function _sendMail(string $to, string $subject, string $message, $cc = false) {
         return mail($to, $subject, $message);
     }
 }

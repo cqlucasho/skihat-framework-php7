@@ -48,21 +48,21 @@ class MemcacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::write
      */
-    public function write($name, $value, $expire = Cache::DEFAULT_EXPIRE) {
+    public function write(string $name, $value, int $expire = Cache::DEFAULT_EXPIRE) {
         return $this->_memcache->set($name, $value, $this->flag, $expire);
     }
 
     /**
      * @see ICacheEngine::read
      */
-    public function read($name) {
+    public function read(string $name) {
         return $this->_memcache->get($name);
     }
 
     /**
      * @see ICacheEngine::delete
      */
-    public function delete($name) {
+    public function delete(string $name) {
         return $this->_memcache->delete($name);
     }
 

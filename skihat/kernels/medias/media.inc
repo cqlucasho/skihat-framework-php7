@@ -75,7 +75,7 @@ interface IMediaEngine {
      *
      * @return array
      */
-    function files($path = '', $sort = 'name');
+    function files($path = '', $sort = 'name') : array;
 
     /**
      * 根据$file和$path上传文件，并返回上传后Web访问地址。
@@ -114,10 +114,11 @@ abstract class Media {
      */
     public static function initialize() {
         self::$_factory = new IocFactory(Skihat::read(self::CONFIG_NAME, array(
-            self::DEFAULT_ENGINE => array(
-                SKIHAT_IOC_CLASS => 'kernels.medias.engines.file_upload_engine',
-                SKIHAT_IOC_PATHS => SKIHAT_PATH_LIBRARY
-            ))));
+            self::DEFAULT_ENGINE => [
+                SKIHAT_IOC_CLASS => 'medias.engines.file_media_engine',
+                SKIHAT_IOC_PATHS => SKIHAT_PATH_KERNEL
+            ]
+        )));
     }
 
     /**
@@ -125,7 +126,7 @@ abstract class Media {
      *
      * @return array
      */
-    public static function engines() {
+    public static function engines() : array {
         return self::$_factory->instances();
     }
 
@@ -136,7 +137,7 @@ abstract class Media {
      *
      * @return IMediaEngine
      */
-    public static function engine($name) {
+    public static function engine(string $name) : IMediaEngine {
         return self::$_factory->instance($name);
     }
 
@@ -149,9 +150,8 @@ abstract class Media {
      *
      * @return array
      */
-    public static function files($path = false, $sort = false, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->files($path, $sort);
+    public static function files($path = false, $sort = false, string $engine = self::DEFAULT_ENGINE) : array {
+        return self::engine($engine)->files($path, $sort);
     }
 
     /**
@@ -163,9 +163,8 @@ abstract class Media {
      *
      * @return mixed
      */
-    public static function upload($file, $path = false, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->upload($file, $path);
+    public static function upload($file, $path = false, string $engine = self::DEFAULT_ENGINE) {
+        return self::engine($engine)->upload($file, $path);
     }
 
     /**

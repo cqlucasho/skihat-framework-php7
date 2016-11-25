@@ -27,7 +27,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return array
      */
-    public function create(array $fields, array $syntax) {
+    public function create(array $fields, array $syntax) : array {
         # 获取插入表的名称。
         $tableStmt = $this->safeName($syntax[self::SYNTAX_TABLE]);
         # 根据数据和语法过滤有效数据并生成查询命令。
@@ -77,7 +77,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return array
      */
-    public function update($fields, array $syntax) {
+    public function update($fields, array $syntax) : array {
         # 如果$fields是数组值，则使用updateFields方法生成，否则表示直接生成。
         if (is_array($fields)) {
             if (!($fieldStmt = array_key_pop($fields, 0))) {
@@ -103,7 +103,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return array
      */
-    public function delete(array $syntax) {
+    public function delete(array $syntax) : array {
         $args = array();
 
         # 生成条件，表命令。
@@ -123,7 +123,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return array
      */
-    public function fetch(array $syntax, $options = array()) {
+    public function fetch(array $syntax, array $options = array()) : array {
         $args = array();
 
         # 获取字段，条件，排序，表和分页语法命令。
@@ -145,7 +145,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return mixed
      */
-    public abstract function safeName($name);
+    public abstract function safeName(string $name);
 
     /**
      * 根据$data和$syntax过滤出有效的列字段值。
@@ -155,7 +155,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return array
      */
-    protected function _fieldsFilter(array &$fields, array &$syntax) {
+    protected function _fieldsFilter(array &$fields, array &$syntax) : array {
         # 如果设置有字段，则去除设置字段以外的值。
         if (isset($syntax[self::SYNTAX_FIELDS])) {
             $fields = array_intersect_key($fields, array_flip($syntax[self::SYNTAX_FIELDS]));
@@ -173,7 +173,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @throws DBSyntaxException 如果语法发生错误将引发本异常。
      */
-    protected function _stmtFullTable(array &$syntax) {
+    protected function _stmtFullTable(array &$syntax) : string {
         # 如果在语法中指定有自己的FROM结构，则直接返回v1.1。
         if (isset($syntax[self::SYNTAX_FROM])) {
             return $syntax[self::SYNTAX_FROM];
@@ -209,7 +209,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @throws DbSyntaxException
      */
-    protected function _stmtListTableAlias(array &$syntax) {
+    protected function _stmtListTableAlias(array &$syntax) : string {
         # 获取基本表的声明信息。
         $stmt = $this->_stmtTableAlias($syntax);
         if (isset($syntax[self::SYNTAX_LINK])) {
@@ -235,7 +235,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtTableAlias(array &$syntax) {
+    protected function _stmtTableAlias(array &$syntax) : string {
         # 如果语法中存在表别名信息。
         if (isset($syntax[self::SYNTAX_TABLE_ALIAS])) {
             return $this->safeName($syntax[self::SYNTAX_TABLE_ALIAS]);
@@ -275,7 +275,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtWhere(array &$args, array &$syntax) {
+    protected function _stmtWhere(array &$args, array &$syntax) : string {
         # 如果没有设置条件，直接返回。
         if ($where = array_key_value($syntax, self::SYNTAX_WHERE)) {
             # 如果字符串条件，直接合并返回。
@@ -316,7 +316,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtInsert($table, $fields, $values) {
+    protected function _stmtInsert(string $table, string $fields, string $values) : string {
         return "INSERT INTO $table($fields) VALUES($values)";
     }
 
@@ -327,7 +327,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtListFields(array $fields) {
+    protected function _stmtListFields(array $fields) : string {
         return implode(',', array_map(array($this, 'safeName'), $fields));
     }
 
@@ -338,8 +338,8 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtListArgs($fieldCount) {
-        return substr(str_repeat('?,', $fieldCount), 0, -1);
+    protected function _stmtListArgs(int $fieldCount) : string {
+        return mb_substr(str_repeat('?,', $fieldCount), 0, -1);
     }
 
     /**
@@ -351,7 +351,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtUpdate($table, $fields, $where) {
+    protected function _stmtUpdate(string $table, string $fields, string $where) : string {
         return "UPDATE $table SET $fields $where";
     }
 
@@ -362,7 +362,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtUpdateFields(array &$fields) {
+    protected function _stmtUpdateFields(array &$fields) : string {
         # 使用更新参数：array('group = ?,allow = ?', 1, 0)。
         if ($stmt = array_key_pop($fields, 0)) return $stmt;
 
@@ -383,7 +383,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _deleteTable($table, $fullTable, $where) {
+    protected function _deleteTable(string $table, string $fullTable, string $where) : string {
         return "DELETE $table FROM $fullTable $where";
     }
 
@@ -399,7 +399,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtFetch($table, $fields, $where = '', $group = '', $order = '', $page = '') {
+    protected function _stmtFetch(string $table, string $fields, string $where = '', string $group = '', string $order = '', string $page = '') : string {
         return "SELECT $fields FROM {$table}{$where}{$group}{$order}{$page}";
     }
 
@@ -410,7 +410,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtFetchFields(array &$syntax) {
+    protected function _stmtFetchFields(array &$syntax) : string {
         # 如果没有设置查询字段或排除字段，直接返回。
         if ($fields = array_key_value($syntax, self::SYNTAX_FIELDS)) {
             # 如果列为字符串，则直接返回值。
@@ -429,7 +429,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtGroup(array &$syntax) {
+    protected function _stmtGroup(array &$syntax) : string {
         # 从语法中取出分组信息。
         if ($group = array_key_value($syntax, self::SYNTAX_GROUP)) {
             if (is_string($group)) return ' GROUP BY ' . $group;
@@ -439,9 +439,7 @@ abstract class SqlBuilder implements IDataSupport {
                 $stmt .= ($this->safeName($field) . ',');
             }
 
-            echo $stmt;
-
-            return substr($stmt, 0, -1);
+            return mb_substr($stmt, 0, -1);
         }
 
         return '';
@@ -454,7 +452,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtOrder(array &$syntax) {
+    protected function _stmtOrder(array &$syntax) : string {
         # 从语法数据中取出排序方式。
         if ($order = array_key_value($syntax, self::SYNTAX_ORDER)) {
             # 如果指定排序方式为字符串，则直接返回排序声明。
@@ -465,7 +463,7 @@ abstract class SqlBuilder implements IDataSupport {
                 $stmt .= ($this->safeName($field) . ' ' . $dir . ',');
             }
 
-            return substr($stmt, 0, -1);
+            return mb_substr($stmt, 0, -1);
         }
 
         return '';
@@ -478,7 +476,7 @@ abstract class SqlBuilder implements IDataSupport {
      *
      * @return string
      */
-    protected function _stmtPage(array &$syntax) {
+    protected function _stmtPage(array &$syntax) : string {
         # 如果语法中包含有分页信息，设置limit值。
         if ($page = array_key_value($syntax, self::SYNTAX_PAGE)) {
             list($page, $size) = $page;

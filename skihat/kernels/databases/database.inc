@@ -258,7 +258,7 @@ interface IDatabaseEngine extends IDataSupport {
      *
      * @return array
      */
-    function fetchSchema($table);
+    function fetchSchema(string $table) : array;
 
     /**
      * 使用$cmd和$args执行数据库查询，并返回查询结果。
@@ -269,7 +269,7 @@ interface IDatabaseEngine extends IDataSupport {
      *
      * @return mixed
      */
-    function query($cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC);
+    function query(string $cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC);
 
     /**
      * 使用$cmd、$args和$options 执行数据库命令，并返回响应的行。
@@ -280,7 +280,7 @@ interface IDatabaseEngine extends IDataSupport {
      *
      * @return int
      */
-    function execute($cmd, array $args = array());
+    function execute(string $cmd, array $args = array()) : int;
 }
 
 /**
@@ -308,7 +308,7 @@ abstract class Database {
      * 工厂初始化方法，执行对象的初始化。
      */
     public static function initialize() {
-        self::$_factory = new IocFactory(skihat::read(self::CONFIG_NAME, array()));
+        self::$_factory = new IocFactory(Skihat::read(self::CONFIG_NAME, array()));
     }
 
     /**
@@ -318,7 +318,7 @@ abstract class Database {
      *
      * @return IDatabaseEngine
      */
-    public static function engine($name = self::DEFAULT_ENGINE) {
+    public static function engine(string $name = self::DEFAULT_ENGINE) : IDatabaseEngine {
         return self::$_factory->instance($name);
     }
 

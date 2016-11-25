@@ -33,10 +33,11 @@ class FileMediaEngine implements IMediaEngine {
     /**
      * @var array 允许上传的文件类型。
      */
-    public $allowUploadTypes = array(
+    public $allowUploadTypes = [
         'png' => 'image/png',
         'gif' => 'image/gif',
-        'jpg' => 'image/jpeg');
+        'jpg' => 'image/jpeg'
+    ];
 
     /**
      * @var int 允许上传的文件大小。
@@ -46,12 +47,12 @@ class FileMediaEngine implements IMediaEngine {
     /**
      * @var array 照片扩展名。
      */
-    public $photoExts = array('gif', 'jpg', 'jpeg', 'png', 'bmp');
+    public $photoExts = ['gif', 'jpg', 'jpeg', 'png', 'bmp'];
 
     /**
      * @var array 允许查看的文件类型。
      */
-    public $allowViews = array('png', 'gif', 'jpg');
+    public $allowViews = ['png', 'gif', 'jpg'];
 
     /**
      * @var string 服务器上传地址，默认为SKIHAT_PATH_APP_PUBLICS_UPLOADS。
@@ -66,7 +67,7 @@ class FileMediaEngine implements IMediaEngine {
     /**
      * @see IMediaEngine::files
      */
-    public function files($path = '', $sort = 'name') {
+    public function files($path = '', $sort = 'name') : array {
         if ($fullPath = $this->_fullPath($path)) {
             if ($schemas = $this->_fileSchemas($fullPath)) {
                 return $this->_fileSorts($schemas, $sort);
@@ -85,7 +86,7 @@ class FileMediaEngine implements IMediaEngine {
             if ($this->_uploadVerify($file)) {
                 $fullName = $this->_uploadFullName($fullPath, $file);
                 if ($this->_uploadStore($file, $fullName)) {
-                    return $this->hostUrl . mb_substr($fullName, strlen($this->hostPath));
+                    return $this->hostUrl . mb_substr($fullName, mb_strlen($this->hostPath));
                 }
             }
         }
@@ -100,7 +101,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return array
      */
-    protected function _fileSchemas($path) {
+    protected function _fileSchemas(string $path) : array {
         $schemas = array();
 
         if ($handle = opendir($path)) {
@@ -126,7 +127,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return array
      */
-    protected function _fileSchema($path, $file) {
+    protected function _fileSchema(string $path, string $file) : array {
         # 如果指定文件是一个文件夹.
         if (is_dir($fullFile = $path . DIRECTORY_SEPARATOR . $file)) {
             return array(
@@ -162,7 +163,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return array
      */
-    protected function _fileSorts(&$schemas, $sort) {
+    protected function _fileSorts(array &$schemas, string $sort) : array {
         $this->sort = $sort;
 
         usort($schemas, array($this, '_fileSort'));
@@ -177,18 +178,18 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return int
      */
-    protected function _fileSort($lhs, $rhs) {
+    protected function _fileSort(array $lhs, array $rhs) : int {
         if ($lhs[self::SCHEMA_IS_DIR] && !$rhs[self::SCHEMA_IS_DIR]) return -1;
         if (!$lhs[self::SCHEMA_IS_DIR] && $rhs[self::SCHEMA_IS_DIR]) return 1;
 
         $sort = strtolower($this->sort);
 
         if ($sort == 'size') {
-            return $lhs[self::SCHEMA_FILE_SIZE] > $rhs[self::SCHEMA_FILE_SIZE] ? -1 : 1;
+            return $rhs[self::SCHEMA_FILE_SIZE] <=> $lhs[self::SCHEMA_FILE_SIZE];
         } else if ($sort == 'type') {
             return strcmp($lhs[self::SCHEMA_FILE_TYPE], $rhs[self::SCHEMA_FILE_TYPE]);
         } else if ($sort == 'datetime') {
-            return $lhs[self::SCHEMA_DATE_TIME] > $rhs[self::SCHEMA_DATE_TIME] ? 1 : -1;
+            return $lhs[self::SCHEMA_DATE_TIME] <=> $rhs[self::SCHEMA_DATE_TIME];
         }
 
         return strcmp($lhs[self::SCHEMA_FILE_NAME], $rhs[self::SCHEMA_FILE_NAME]);
@@ -199,16 +200,12 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @param string $path 路径。
      *
-     * @return string
+     * @return string|bool
      */
-    protected function _fullPath($path) {
+    protected function _fullPath(string $path) {
         $fulPath = realpath($this->hostPath . DIRECTORY_SEPARATOR . $path);
 
-        if ($fulPath) {
-            return $fulPath;
-        }
-
-        return false;
+        return $fulPath ?? false;
     }
 
     /**
@@ -218,7 +215,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return bool
      */
-    protected function _uploadVerify($file) {
+    protected function _uploadVerify(array $file) : bool {
         # 判断是否包含错误和满足上传文件大小要求。
         if ($file['error']) return false;
         if ($file['size'] > $this->allowUploadSize) return false;
@@ -236,7 +233,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return string
      */
-    protected function _uploadFullName($path, $file) {
+    protected function _uploadFullName(string $path, array $file) : string {
         return sprintf('%s/%d-%d.%s', $path, microtime(true) * 1000, rand(1111, 9999), pathinfo($file['name'], PATHINFO_EXTENSION));
     }
 
@@ -248,7 +245,7 @@ class FileMediaEngine implements IMediaEngine {
      *
      * @return string
      */
-    protected function _uploadStore($file, $fullName) {
+    protected function _uploadStore(array $file, string $fullName) : string {
         return move_uploaded_file($file['tmp_name'], $fullName);
     }
 

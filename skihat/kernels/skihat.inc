@@ -66,7 +66,7 @@ abstract class Skihat {
      * @param string $name  配置名字。
      * @param mixed  $value 配置值。
      */
-    public static function write($name, $value) {
+    public static function write(string $name, $value) {
         self::$_conf[$name] = $value;
     }
 
@@ -78,8 +78,8 @@ abstract class Skihat {
      *
      * @return mixed
      */
-    public static function read($name, $default = FALSE) {
-        return isset(self::$_conf[$name]) ? self::$_conf[$name] : $default;
+    public static function read(string $name, $default = FALSE) {
+        return self::$_conf[$name] ?? $default;
     }
 
     /**
@@ -88,7 +88,7 @@ abstract class Skihat {
      * @param string $name    调试类型名称。
      * @param string $message 调试消息。
      */
-    public static function debug($name, $message) {
+    public static function debug(string $name, string $message) {
         # 格式化消息.
         $line = sprintf("<li><b>{$name}</b>:{$message}</li>", $name, $message);
 
@@ -147,7 +147,7 @@ abstract class Skihat {
      *
      * @return string|bool
      */
-    public static function locate($file, $paths = false, $ext = SKIHAT_FILE_EXT) {
+    public static function locate(string $file, $paths = false, string $ext = SKIHAT_FILE_EXT) {
         # 转换文件名，获取真实的文件名部分。
         $realFile = self::_realFile($file, $ext);
         if ($file && is_string($paths)) {
@@ -184,7 +184,7 @@ abstract class Skihat {
      *
      * @throws FileNotFoundException 如果文件没有找到引发异常。
      */
-    public static function import($file, $paths = FALSE, $ext = SKIHAT_FILE_EXT) {
+    public static function import(string $file, $paths = FALSE, string $ext = SKIHAT_FILE_EXT) {
         # 生成文件缓存key码。
         $fileKey = $file . $ext;
 
@@ -217,7 +217,7 @@ abstract class Skihat {
      * @throws FileNotFoundException 如果文件未找到引发异常。
      * @throws TypeNotFoundException 如果类型未找到引发异常。
      */
-    public static function using($class, $paths = false, $ext = SKIHAT_FILE_EXT) {
+    public static function using(string $class, $paths = false, string $ext = SKIHAT_FILE_EXT) : string {
         list($file, $clsName) = self::_splitClass($class);
 
         # 判断类是否存在，不存在则从文件中导入。
@@ -237,7 +237,6 @@ abstract class Skihat {
      *
      * @example
      * <pre>
-     *      Skihat::ioc('#FileCacheEngine');
      *      Skihat::ioc('kernels.caches.engines.file_cache_engine',SKIHAT_PATH_LIBRARY);
      *      Skihat::ioc('kernels.caches.engines.file_cache_engine#FileCacheEngine',SKIHAT_PATH_LIBRARY);
      *
@@ -262,7 +261,7 @@ abstract class Skihat {
      * @throws TypeNotFoundException 如果指定类型未找到，引发异常。
      * @throws ConfigException 如果$conf没有置SKIHAT_IOC_CLASS声明。
      */
-    public static function ioc($conf, $paths = false, $ext = SKIHAT_FILE_EXT) {
+    public static function ioc($conf, $paths = false, string $ext = SKIHAT_FILE_EXT) {
         if (is_string($conf)) {
             return self::_createObject($conf, $paths, $ext);
         }
@@ -290,13 +289,13 @@ abstract class Skihat {
     /**
      * 根据className获取类的唯一单一实例。
      *
-     * @param  string $className 类的完整名称。
+     * @param string $className 类的完整名称。
      * @param mixed   $paths     类的查找路径。
      * @param string  $ext       文件扩展名。
      *
      * @return mixed
      */
-    public static function singleton($className, $paths = false, $ext = SKIHAT_FILE_EXT) {
+    public static function singleton(string $className, $paths = false, string $ext = SKIHAT_FILE_EXT) {
         # 如果指定的类还没有在实例中创建；
         if (!isset(self::$_singletons[$className])) {
             self::$_singletons[$className] = self::ioc($className, $paths, $ext);
@@ -320,7 +319,7 @@ abstract class Skihat {
      *
      * @return string
      */
-    public static function i18n($name, $default = '', $lang = SKIHAT_I18N_LANG) {
+    public static function i18n(string $name, string $default = '', string $lang = SKIHAT_I18N_LANG) : string {
         list($file, $key) = explode(SKIHAT_PACKAGE_SEPARATOR, $name);
         $langKey = $file . '-' . $lang;
 
@@ -346,7 +345,7 @@ abstract class Skihat {
      *
      * @return string
      */
-    public static function version() {
+    public static function version() : string {
         return '1.0 beta';
     }
 
@@ -357,7 +356,7 @@ abstract class Skihat {
      *
      * @return string
      */
-    protected static function _debugLines(array $debugs) {
+    protected static function _debugLines(array $debugs) : string {
         return "\r\n\r\n<ul>\r\n" . implode("\r\n", $debugs) . "\r\n</ul>\r\n";
     }
 
@@ -369,7 +368,7 @@ abstract class Skihat {
      *
      * @return string
      */
-    protected static function _realFile($file, $ext) {
+    protected static function _realFile(string $file, string $ext) : string {
         return str_replace(SKIHAT_PACKAGE_SEPARATOR, DIRECTORY_SEPARATOR, $file) . $ext;
     }
 
@@ -381,7 +380,7 @@ abstract class Skihat {
      *
      * @return string|bool
      */
-    protected static function _fullFile($path, $file) {
+    protected static function _fullFile(string $path, string $file) {
         return is_file($fullFile = $path . DIRECTORY_SEPARATOR . $file) ? $fullFile : false;
     }
 
@@ -392,7 +391,7 @@ abstract class Skihat {
      *
      * @return array(file,clsName);
      */
-    protected static function _splitClass($class) {
+    protected static function _splitClass(string $class) : array {
         # 判断是否包含类分隔符，如果包含则直接分隔返回。
         if (strpos($class, SKIHAT_CLASS_SEPARATOR) !== false) {
             return explode(SKIHAT_CLASS_SEPARATOR, $class);
@@ -409,8 +408,9 @@ abstract class Skihat {
      * @param string       $class 类的完整声明。
      * @param string|array $paths 类所在的路径。
      * @param string       $ext   文件扩展名。
+     * @return object
      */
-    protected static function _createObject($class, $paths, $ext = SKIHAT_FILE_EXT) {
+    protected static function _createObject(string $class, $paths, string $ext = SKIHAT_FILE_EXT) {
         $clsName = self::using($class, $paths, $ext);
         return new $clsName();
     }
@@ -424,16 +424,14 @@ abstract class Skihat {
      *
      * @return array(clsName,$paths,$ext,$initial);
      */
-    protected static function _splitIoc(array &$conf, $paths, $ext) {
+    protected static function _splitIoc(array &$conf, $paths, string $ext) : array {
         # 处理数组配置参数。
-        $initial = isset($conf[SKIHAT_IOC_INITIAL]) ? $conf[SKIHAT_IOC_INITIAL] : false;
-        $clsName = isset($conf[SKIHAT_IOC_CLASS]) ? $conf[SKIHAT_IOC_CLASS] : false;
-        $paths = isset($conf[SKIHAT_IOC_PATHS]) ? $conf[SKIHAT_IOC_PATHS] : $paths;
-        $ext = isset($conf[SKIHAT_IOC_EXT]) ? $conf[SKIHAT_IOC_EXT] : $ext;
+        $initial = $conf[SKIHAT_IOC_INITIAL] ?? false;
+        $clsName = $conf[SKIHAT_IOC_CLASS] ?? false;
+        $paths = $conf[SKIHAT_IOC_PATHS] ?? $paths;
+        $ext = $conf[SKIHAT_IOC_EXT] ?? $ext;
 
-        unset($conf[SKIHAT_IOC_CLASS], $conf[SKIHAT_IOC_PATHS],
-        $conf[SKIHAT_IOC_EXT], $conf[SKIHAT_IOC_INITIAL]);
-
+        unset($conf[SKIHAT_IOC_CLASS], $conf[SKIHAT_IOC_PATHS], $conf[SKIHAT_IOC_EXT], $conf[SKIHAT_IOC_INITIAL]);
         return array($clsName, $paths, $ext, $initial);
     }
 
@@ -444,7 +442,7 @@ abstract class Skihat {
      *
      * @return array(module,file)
      */
-    protected static function _splitI18n($file) {
+    protected static function _splitI18n(string $file) : array {
         if (count($splits = explode(':', $file)) > 1) {
             return array(SKIHAT_PATH_APP_MODULES . DIRECTORY_SEPARATOR . $splits[0] . DIRECTORY_SEPARATOR . 'langs', $splits[1]);
         }
@@ -513,7 +511,7 @@ class IocFactory {
      *
      * @throws ConfigException 如果指定$name在配置中不存在则引发异常。
      */
-    public function instance($name) {
+    public function instance(string $name) {
         if (!isset($this->_instances[$name])) {
             if (isset($this->_conf[$name])) {
                 return ($this->_instances[$name] = Skihat::ioc($this->_conf[$name]));
@@ -530,7 +528,7 @@ class IocFactory {
      *
      * @return array
      */
-    public function instances() {
+    public function instances() : array {
         return array_keys($this->_conf);
     }
 
@@ -563,7 +561,7 @@ abstract class CollectionBase implements ArrayAccess {
      * @see ArrayAccess::offsetGet
      */
     public function offsetGet($name) {
-        return isset($this->_vars[$name]) ? $this->_vars[$name] : null;
+        return $this->_vars[$name] ?? null;
     }
 
     /**

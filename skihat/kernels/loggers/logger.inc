@@ -26,7 +26,7 @@ class LoggerException extends SkihatException {
  *
  * @package skihat.kernels.loggers
  */
-interface  ILoggerEngine {
+interface ILoggerEngine {
     /**
      * 根据$subject，$message和$user记录日志信息。
      *
@@ -36,7 +36,7 @@ interface  ILoggerEngine {
      *
      * @return mixed
      */
-    function write($title, $message, $user = Logger::DEFAULT_USER);
+    function write(string $title, string $message, $user = Logger::DEFAULT_USER);
 }
 
 /**
@@ -46,7 +46,7 @@ abstract class Logger {
     /**
      * @const string 日志调试名称。
      */
-    const  DEBUG_NAME = 'kernels/loggers';
+    const DEBUG_NAME = 'kernels/loggers';
 
     /**
      * @const string 配置名称。
@@ -77,7 +77,7 @@ abstract class Logger {
      *
      * @return ILoggerEngine
      */
-    public static function engine($name) {
+    public static function engine(string $name) : ILoggerEngine {
         return self::$_factory->instance($name);
     }
 
@@ -86,7 +86,7 @@ abstract class Logger {
      *
      * @return array
      */
-    public static function engines() {
+    public static function engines() : array {
         return self::$_factory->instances();
     }
 
@@ -98,9 +98,8 @@ abstract class Logger {
      * @param string $user    用户信息，默认为admin。
      * @param string $engine  日志引擎，默认为default。
      */
-    public static function write($title, $message, $user = self::DEFAULT_USER, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        $engine->write($title, $message, $user);
+    public static function write(string $title, string $message, string $user = self::DEFAULT_USER, string $engine = self::DEFAULT_ENGINE) {
+        self::engine($engine)->write($title, $message, $user);
     }
 
     /**

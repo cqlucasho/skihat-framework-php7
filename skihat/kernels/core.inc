@@ -27,7 +27,7 @@
  *
  * @return string
  */
-function camel_upper($word) {
+function camel_upper(string $word) : string {
     $word = str_replace(
         array('_a', '_b', '_c', '_d', '_e', '_f', '_g', '_h', '_i', '_j', '_k', '_l', '_m', '_n', '_o', '_p', '_q', '_r', '_s', '_t', '_u', '_v', '_w', '_x', '_y', '_z'),
         array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'),
@@ -50,12 +50,11 @@ function camel_upper($word) {
  *
  * @return string
  */
-function camel_lower($word) {
+function camel_lower(string $word) : string {
     return trim(str_replace(
         array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'),
         array('_a', '_b', '_c', '_d', '_e', '_f', '_g', '_h', '_i', '_j', '_k', '_l', '_m', '_n', '_o', '_p', '_q', '_r', '_s', '_t', '_u', '_v', '_w', '_x', '_y', '_z'),
         $word), '_');
-
 }
 
 /**
@@ -71,7 +70,7 @@ function camel_lower($word) {
  *
  * @return string
  */
-function pascal($word) {
+function pascal(string $word) : string {
     return ucfirst(str_replace(
         array('_a', '_b', '_c', '_d', '_e', '_f', '_g', '_h', '_i', '_j', '_k', '_l', '_m', '_n', '_o', '_p', '_q', '_r', '_s', '_t', '_u', '_v', '_w', '_x', '_y', '_z'),
         array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'),
@@ -82,25 +81,25 @@ function pascal($word) {
  * 根据数组$array索引$key返回值，如果指定$key的索引不存在，则返回$default值。
  *
  * @param array $array   数组参数。
- * @param mixed $key     索引。
+ * @param string $key     索引。
  * @param mixed $default 默认值。
  *
  * @return mixed
  */
-function array_key_value(array &$array, $key, $default = false) {
-    return isset($array[$key]) ? $array[$key] : $default;
+function array_key_value(array &$array, string $key, bool $default = false) {
+    return $array[$key] ?? $default;
 }
 
 /**
  * 根据$array索引$key删除值，并返回删除$key的值，如果$key不存在则返回$default参数值。
  *
  * @param array $array   数组参数。
- * @param mixed $key     索引。
+ * @param string $key     索引。
  * @param mixed $default 默认值。
  *
  * @return mixed
  */
-function array_key_pop(array &$array, $key, $default = false) {
+function array_key_pop(array &$array, string $key, bool $default = false) {
     if (isset($array[$key])) {
         $default = $array[$key];
         unset($array[$key]);
@@ -120,11 +119,11 @@ function array_key_pop(array &$array, $key, $default = false) {
  *
  * @return array
  */
-function array_key_filter(array &$array, $callback) {
-    $rows = array();
+function array_key_filter(array &$array, $callback) : array {
+    $rows = [];
 
     foreach ($array as $key => $val) {
-        if (call_user_func($callback, $key)) {
+        if ($val = call_user_func($callback, $val)) {
             $rows[$key] = $val;
         }
     }
@@ -132,7 +131,7 @@ function array_key_filter(array &$array, $callback) {
     return $rows;
 }
 
-/**$
+/**
  * 将join数组的值，追加到$input后面。
  *
  * @param array $input 被追加数组。
@@ -140,7 +139,7 @@ function array_key_filter(array &$array, $callback) {
  *
  * @return array
  */
-function array_append(array &$input, array $join) {
+function array_append(array &$input, array $join) : array {
     # 迭代值，并追加到input之后。
     foreach ($join as $value) {
         array_push($input, $value);
@@ -163,12 +162,9 @@ function array_append(array &$input, array $join) {
  * @param mixed  $key  关键字
  * @param string $join 附加数组值
  *
- * @return void
+ * @return string
  */
 function array_join_str(array &$arr, $key, $join) {
-    # 如果附加值为false返回；
-    if (empty($join)) return;
-
     # 如果数组右眼包含指定KEY的值；
     if (isset($arr[$key])) {
         $arr[$key] = $arr[$key] . $join;
@@ -192,10 +188,7 @@ function array_join_str(array &$arr, $key, $join) {
  *
  * @return string
  */
-function array_html_attrs(array $arr) {
-    # 如果指定属性不是数组参数，直接返回；
-    if (!is_array($arr)) return $arr;
-
+function array_html_attrs(array $arr) : string {
     # 生成完整参数；
     $html = '';
     foreach ($arr as $name => $value) {
@@ -208,8 +201,10 @@ function array_html_attrs(array $arr) {
 
 /**
  * 返回客户请求方法名称。
+ *
+ * return string
  */
-function client_method() {
+function client_method() : string {
     $method = strtolower($_SERVER['REQUEST_METHOD']);
 
     # 如果请求方法不是GET，则判断是否包含方法参数。
@@ -225,14 +220,16 @@ function client_method() {
  *
  * @return string
  */
-function client_url() {
+function client_url() : string {
     return $_SERVER['REQUEST_URI'];
 }
 
 /**
  * 返回客户端请求的引用地址。
+ *
+ * @return string
  */
-function client_refer() {
+function client_refer() : string {
     return $_SERVER['HTTP_REFERER'];
 }
 
@@ -241,7 +238,7 @@ function client_refer() {
  *
  * @return string
  */
-function client_script_name() {
+function client_script_name() : string {
     return substr($_SERVER['SCRIPT_NAME'], 1);
 }
 
@@ -250,7 +247,7 @@ function client_script_name() {
  *
  * @return string
  */
-function client_address() {
+function client_address() : string {
     if (getenv("HTTP_CLIENT_IP")) return getenv("HTTP_CLIENT_IP");
     if (getenv("HTTP_X_FORWARDED_FOR")) return getenv("HTTP_X_FORWARDED_FOR");
     if (getenv("REMOTE_ADDR")) return getenv("REMOTE_ADDR");
@@ -262,7 +259,7 @@ function client_address() {
  *
  * @return string
  */
-function d() {
+function d() : string {
     return $_SERVER['HTTP_USER_AGENT'];
 }
 
@@ -271,7 +268,7 @@ function d() {
  *
  * @return array
  */
-function client_languages() {
+function client_languages() : array {
     # zh-CN,zh;q=0.8,xh;q=0.6
     $lang = explode(';', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
     return explode(',', $lang[0]);
@@ -283,7 +280,7 @@ function client_languages() {
  *
  * @return bool
  */
-function enable_cached() {
+function enable_cached() : bool {
     return SKIHAT_DEBUG <= SKIHAT_DEBUG_CACHE;
 }
 
@@ -292,7 +289,7 @@ function enable_cached() {
  *
  * @return string
  */
-function full_path() {
+function full_path() : string {
     return implode(DIRECTORY_SEPARATOR, func_get_args());
 }
 
@@ -301,7 +298,7 @@ function full_path() {
  *
  * @return string
  */
-function full_file() {
+function full_file() : string {
     return implode(SKIHAT_PACKAGE_SEPARATOR, func_get_args());
 }
 
@@ -312,7 +309,7 @@ function full_file() {
  *
  * @return bool
  */
-function not_null($val) {
+function not_null($val) : bool {
     return !is_null($val);
 }
 
@@ -323,7 +320,7 @@ function not_null($val) {
  *
  * @return bool
  */
-function not_empty($val) {
+function not_empty($val) : bool {
     return !empty($val);
 }
 
@@ -334,6 +331,6 @@ function not_empty($val) {
  *
  * @return bool
  */
-function not_numeric($val) {
+function not_numeric($val) : bool {
     return !is_numeric($val);
 }

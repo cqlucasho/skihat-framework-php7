@@ -38,7 +38,7 @@ interface ICacheEngine {
      *
      * @return mixed
      */
-    function write($name, $value, $expire = Cache::DEFAULT_EXPIRE);
+    function write(string $name, $value, int $expire = Cache::DEFAULT_EXPIRE);
 
     /**
      * 根据$name参数读取缓存的值，如果值不存在或已过期返回false。
@@ -47,7 +47,7 @@ interface ICacheEngine {
      *
      * @return mixed|bool
      */
-    function read($name);
+    function read(string $name);
 
     /**
      * 根据$name参数删除缓存的值，并返回结果。
@@ -56,7 +56,7 @@ interface ICacheEngine {
      *
      * @return mixed
      */
-    function delete($name);
+    function delete(string $name) : bool;
 
     /**
      * 清空缓存引擎的全部缓存值，并返回结果。
@@ -118,7 +118,7 @@ abstract class Cache {
      *
      * @return array
      */
-    public static function engines() {
+    public static function engines() : array {
         return self::$_factory->instances();
     }
 
@@ -129,7 +129,7 @@ abstract class Cache {
      *
      * @return ICacheEngine
      */
-    public static function engine($engine) {
+    public static function engine(string $engine) {
         return self::$_factory->instance($engine);
     }
 
@@ -143,22 +143,20 @@ abstract class Cache {
      *
      * @return mixed
      */
-    public static function write($name, $value, $engine = self::DEFAULT_ENGINE, $expire = self::DEFAULT_EXPIRE) {
-        $engine = self::engine($engine);
-        return $engine->write($name, $value, $expire);
+    public static function write(string $name, $value, string $engine = self::DEFAULT_ENGINE, int $expire = self::DEFAULT_EXPIRE) {
+        return self::engine($engine)->write($name, $value, $expire);
     }
 
     /**
      * 根据$name和$engine读取缓存值，如果缓存值不存在，或已过期返回false。
      *
-     * @param  string $name   缓存名称。
-     * @param string  $engine 缓存引擎，默认为default。
+     * @param string $name   缓存名称。
+     * @param string $engine 缓存引擎，默认为default。
      *
      * @return mixed|bool
      */
-    public static function read($name, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->read($name);
+    public static function read(string $name, string $engine = self::DEFAULT_ENGINE) {
+        return self::engine($engine)->read($name);
     }
 
     /**
@@ -169,9 +167,8 @@ abstract class Cache {
      *
      * @return mixed
      */
-    public static function delete($name, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->delete($name);
+    public static function delete(string $name, string $engine = self::DEFAULT_ENGINE) {
+        return self::engine($engine)->delete($name);
     }
 
     /**
@@ -181,9 +178,8 @@ abstract class Cache {
      *
      * @return mixed
      */
-    public static function flush($engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->flush();
+    public static function flush(string $engine = self::DEFAULT_ENGINE) {
+        return self::engine($engine)->flush();
     }
 
     /**

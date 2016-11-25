@@ -68,7 +68,7 @@ class SecurityFilter implements IActionFilter {
      *
      * @return bool
      */
-    public function authenticate($identity, $autoRedirect = true) {
+    public function authenticate($identity, bool $autoRedirect = true) : bool {
         # 如果当前用户验证成功
         if ($identity = Security::authenticate($identity, $this->authentication)) {
             # 注册身份证明。
@@ -93,7 +93,7 @@ class SecurityFilter implements IActionFilter {
      *
      * @return mixed
      */
-    public function authorize($sro, $rule = 'sum') {
+    public function authorize($sro, string $rule = 'sum') {
         # 获取当前验证信息，如果验证信息为空，直接全部返回false。
         if ($identity = $this->identity()) {
             return Security::authorize($identity, $sro, $rule, $this->authorization);
@@ -106,7 +106,7 @@ class SecurityFilter implements IActionFilter {
     /**
      * 将$identity注册为当前用户的标识信息。
      *
-     * @param $identity
+     * @param mixed $identity
      */
     public function register($identity) {
         $_SESSION[self::_securitySession()] = $identity;
@@ -181,7 +181,7 @@ class SecurityFilter implements IActionFilter {
      *
      * @return bool
      */
-    protected function _authenticate($actionMethod) {
+    protected function _authenticate(string $actionMethod) : bool {
         # 如果不需要验证直接返回。
         if (!$this->authenticates) return true;
         # 如果当前活动需要验证，并且还没有进行验证。
@@ -202,7 +202,7 @@ class SecurityFilter implements IActionFilter {
      *
      * @return bool
      */
-    protected function _authorize($actionMethod) {
+    protected function _authorize($actionMethod) : bool {
         # 如果使用*表示验证所有的活动。
         if (!$this->authorizes) return true;
         if ($this->authorizes == '*') return $this->_defaultAuthorize();
@@ -221,21 +221,21 @@ class SecurityFilter implements IActionFilter {
     /**
      * @return string 安全SESSION关键字。
      */
-    protected function _securitySession() {
+    protected function _securitySession() : string {
         return 'security-filter-' . $this->authentication . '-' . $this->authorization;
     }
 
     /**
      * @return string 登录完成后的返回地址。
      */
-    protected function _returnSession() {
+    protected function _returnSession() : string {
         return 'security-return-' . $this->authorization . '-' . $this->authorization;
     }
 
     /**
      * 返回当前请求的默认验证结果。
      */
-    protected function _defaultAuthorize() {
+    protected function _defaultAuthorize() : bool {
         $rights = Security::authorize($this->identity(), $this->_defaultSro(), 'sum');
         return array_sum($rights) > count($rights);
     }
@@ -245,7 +245,7 @@ class SecurityFilter implements IActionFilter {
      *
      * @return array
      */
-    protected function _defaultSro() {
+    protected function _defaultSro() : array {
         # 获取当前请求实例。
         $request = $this->_controller->request;
 

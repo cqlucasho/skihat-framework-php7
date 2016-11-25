@@ -73,7 +73,7 @@ interface IAuthorization {
      *
      * @return mixed
      */
-    function authorize($identity, $sro, $rule = self::RULE_SUM);
+    function authorize($identity, $sro, string $rule = self::RULE_SUM);
 }
 
 /**
@@ -117,9 +117,7 @@ abstract class Security {
      */
     public static function initialize() {
         # 读取动态配置信息。
-        $conf = Skihat::read(self::CONFIG_NAME, array(
-            self::CONFIG_AUTHENTICATIONS => array(),
-            self::CONFIG_AUTHORIZATIONS => array()));
+        $conf = Skihat::read(self::CONFIG_NAME, [self::CONFIG_AUTHENTICATIONS => [], self::CONFIG_AUTHORIZATIONS => []]);
 
         # 创建工厂实例。
         self::$_authenticationFactory = new IocFactory($conf[self::CONFIG_AUTHENTICATIONS]);
@@ -134,9 +132,8 @@ abstract class Security {
      *
      * @return mixed|bool
      */
-    public static function authenticate($identity, $authName = self::DEFAULT_AUTHENTICATION) {
-        $authentication = self::$_authenticationFactory->instance($authName);
-        return $authentication->authenticate($identity);
+    public static function authenticate($identity, string $authName = self::DEFAULT_AUTHENTICATION) {
+        return self::$_authenticationFactory->instance($authName)->authenticate($identity);
     }
 
     /**
@@ -149,10 +146,8 @@ abstract class Security {
      *
      * @return mixed
      */
-    public static function authorize($identity, $sro, $rule = IAuthorization::RULE_SUM,
-                                     $authName = self::DEFAULT_AUTHORIZATION) {
-        $authorization = self::$_authorizationFactory->instance($authName);
-        return $authorization->authorize($identity, $sro, $rule);
+    public static function authorize($identity, $sro, string $rule = IAuthorization::RULE_SUM, string $authName = self::DEFAULT_AUTHORIZATION) {
+        return self::$_authorizationFactory->instance($authName)->authorize($identity, $sro, $rule);
     }
 
     /**

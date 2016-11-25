@@ -24,21 +24,21 @@ class XcacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::write
      */
-    public function write($name, $value, $expire = Cache::DEFAULT_EXPIRE) {
+    public function write(string $name, $value, int $expire = Cache::DEFAULT_EXPIRE) {
         return xcache_set($name, $value, $expire);
     }
 
     /**
      * @see ICacheEngine::read
      */
-    public function read($name) {
+    public function read(string $name) {
         return xcache_get($name);
     }
 
     /**
      * @see ICacheEngine::delete
      */
-    public function delete($name) {
+    public function delete(string $name) {
         return xcache_unset($name);
     }
 

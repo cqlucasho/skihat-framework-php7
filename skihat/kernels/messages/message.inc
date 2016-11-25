@@ -65,8 +65,8 @@ abstract class Message {
     public static function initialize() {
         self::$_factory = new IocFactory(Skihat::read(self::CONFIG_NAME, array(
             self::DEFAULT_ENGINE => array(
-                SKIHAT_IOC_CLASS => 'kernels.messages.engines.email_message_engine',
-                SKIHAT_IOC_PATHS => SKIHAT_PATH_LIBRARY)
+                SKIHAT_IOC_CLASS => 'messages.engines.email_message_engine',
+                SKIHAT_IOC_PATHS => SKIHAT_PATH_KERNEL)
         )));
     }
 
@@ -86,7 +86,7 @@ abstract class Message {
      *
      * @return IMessageEngine
      */
-    public static function engine($name = self::DEFAULT_ENGINE) {
+    public static function engine(string $name = self::DEFAULT_ENGINE) : IMessageEngine {
         return self::$_factory->instance($name);
     }
 
@@ -99,9 +99,8 @@ abstract class Message {
      *
      * @return mixed
      */
-    public static function send($address, $message, $engine = self::DEFAULT_ENGINE) {
-        $engine = self::engine($engine);
-        return $engine->send($address, $message);
+    public static function send($address, $message, string $engine = self::DEFAULT_ENGINE) {
+        return self::engine($engine)->send($address, $message);
     }
 
     /**

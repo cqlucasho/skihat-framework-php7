@@ -87,7 +87,7 @@ abstract class Transaction {
      *
      * @return bool
      */
-    public static function register(ITransactionObserver $observer) {
+    public static function register(ITransactionObserver $observer) : bool {
         # 如果注册已有的观察者。
         if (self::hasRegister($observer)) {
             trigger_error('Transaction::register repeat register observer.' . $observer);
@@ -107,7 +107,7 @@ abstract class Transaction {
      *
      * @return bool
      */
-    public static function unRegister(ITransactionObserver $observer) {
+    public static function unRegister(ITransactionObserver $observer) : bool {
         # 如果在数组中包含指定值，删除并返回。
         if (($key = array_search($observer, self::$_observers)) !== false) {
             unset(self::$_observers[$key]);
@@ -124,7 +124,7 @@ abstract class Transaction {
      *
      * @return bool
      */
-    public static function hasRegister(ITransactionObserver $observer) {
+    public static function hasRegister(ITransactionObserver $observer) : bool {
         return in_array($observer, self::$_observers);
     }
 
@@ -133,7 +133,7 @@ abstract class Transaction {
      *
      * @return bool
      */
-    public static function inTransaction() {
+    public static function inTransaction() : bool {
         return self::$_begin;
     }
 
@@ -194,7 +194,7 @@ abstract class Transaction {
     /**
      * @var array 已注册的观察器集合。
      */
-    protected static $_observers = array();
+    protected static $_observers = [];
 
     /**
      * @var bool 是否已经开启事务处理。

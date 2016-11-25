@@ -158,7 +158,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
     /**
      * @see IDatabaseEngine::fetchSchema
      */
-    public function fetchSchema($table) {
+    public function fetchSchema(string $table) : array {
         # 如果指定table的值，还没有加载的缓存中。
         if (!isset(self::$_tableSchemas[$table])) {
             self::$_tableSchemas[$table] = $this->_fetchTableSchema($table);
@@ -170,7 +170,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
     /**
      * @see IDatabaseEngine::query
      */
-    public function query($cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC) {
+    public function query(string $cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC) {
         # 如果当前为调试模式，记录执行结果。
         if (SKIHAT_DEBUG) {
             Skihat::debug(Database::DEBUG_NAME, sprintf('PdoEngine->query: cmd - %s, args - %s', $cmd, implode('|', (array)$args)));
@@ -195,7 +195,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
     /**
      * @see IDatabaseEngine::execute
      */
-    public function execute($cmd, array $args = array()) {
+    public function execute(string $cmd, array $args = array()) : int {
         # 如果当前为调试模式。
         if (SKIHAT_DEBUG) {
             Skihat::debug(Database::DEBUG_NAME, sprintf('PdoEngine->execute: cmd - %s,args - %s', $cmd, implode('|', (array)$args)));
@@ -221,7 +221,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return array
      */
-    protected function _fetchModel($stmt) {
+    protected function _fetchModel(PDOStatement $stmt) : array {
         $meta = array();
         $columnCount = $stmt->columnCount();
         for ($i = 0; $i < $columnCount; $i++) {
@@ -249,7 +249,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return array
      */
-    protected abstract function _fetchTableSchema($table);
+    protected abstract function _fetchTableSchema(string $table): array;
 
     /**
      * 根据数据列表类型，分隔出类型和大小。
@@ -258,7 +258,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return array
      */
-    protected function _fieldType($type) {
+    protected function _fieldType(string $type) : array {
         # int(1) number(1,10)
         if ($pos = strpos($type, '(')) {
             $dbtype = substr($type, 0, $pos);
@@ -276,7 +276,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return PDO
      */
-    protected function _rlink() {
+    protected function _rlink() : PDO {
         # 如果只读连接还没有创建。
         if (!$this->_rlink) {
             $this->_rlink = $this->_createLinkForConfig($this->conf);
@@ -290,7 +290,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return PDO
      */
-    protected function _wlink() {
+    protected function _wlink() : PDO {
         # 如果只读连接还没有创建。
         if (!$this->_wlink) {
             $this->_wlink = $this->wconf ? $this->_createLinkForConfig($this->wconf) : $this->_rlink();
@@ -311,7 +311,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return PDO
      */
-    protected function _createLinkForConfig($conf) {
+    protected function _createLinkForConfig(string $conf) : PDO {
         return $this->_createLink($this->_resolveConfig($conf));
     }
 
@@ -324,7 +324,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @throws ConfigException 如果配置发生错误则引发本异常。
      */
-    protected function _createLink(array $conf) {
+    protected function _createLink(array $conf) : PDO {
         # 获取dsn配置信息。
         if (!($dsn = array_key_pop($conf, self::CONF_DSN))) {
             throw new ConfigException('PdoEngine:conf not support "dsn".');
@@ -346,7 +346,7 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return array
      */
-    protected function _resolveConfig($conf) {
+    protected function _resolveConfig(string $conf) : array {
         # 如果没有进行配设置，直接返回空数组。
         if (!$conf) return array();
 
@@ -367,5 +367,5 @@ abstract class PdoEngine implements IDatabaseEngine, ITransactionObserver {
      *
      * @return SqlBuilder
      */
-    protected abstract function _createBuilder();
+    protected abstract function _createBuilder() : SqlBuilder;
 }

@@ -38,7 +38,7 @@ class FileCacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::write
      */
-    public function write($name, $value, $expire = Cache::DEFAULT_EXPIRE) {
+    public function write(string $name, $value, int $expire = Cache::DEFAULT_EXPIRE) {
         # 将缓存信息写入缓存文件中。
         $bytes = file_put_contents($this->_cacheFile($name), serialize(array($expire + time(), $value)));
 
@@ -53,7 +53,7 @@ class FileCacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::read
      */
-    public function read($name) {
+    public function read(string $name) {
         $file = $this->_cacheFile($name);
 
         # 如果文件不存在。
@@ -73,7 +73,7 @@ class FileCacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::delete
      */
-    public function delete($name) {
+    public function delete(string $name) : bool {
         $file = $this->_cacheFile($name);
         if (is_file($file)) {
             unlink($file);
@@ -108,7 +108,7 @@ class FileCacheEngine implements ICacheEngine {
      *
      * @return string
      */
-    protected function _cacheFile($name) {
+    protected function _cacheFile(string $name) : string {
         return $this->paths . DIRECTORY_SEPARATOR . $this->prefix . '-' . $name . '.tmp';
     }
 }

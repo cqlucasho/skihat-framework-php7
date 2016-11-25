@@ -23,21 +23,21 @@ class ApcCacheEngine implements ICacheEngine {
     /**
      * @see ICacheEngine::write
      */
-    public function write($name, $value, $expire = Cache::DEFAULT_EXPIRE) {
+    public function write(string $name, $value, int $expire = Cache::DEFAULT_EXPIRE) {
         return apc_store($name, $value, $expire);
     }
 
     /**
      * @see ICacheEngine::read
      */
-    public function read($name) {
+    public function read(string $name) {
         return apc_fetch($name);
     }
 
     /**
      * @see ICacheEngine::delete
      */
-    public function delete($name) {
+    public function delete(string $name) {
         return apc_delete($name);
     }
 

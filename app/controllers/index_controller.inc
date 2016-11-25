@@ -20,6 +20,7 @@
  */
 class IndexController extends ApplicationController {
     public function indexAction() {
+        echo camel_upper('yes_a');
         $this['hello'] = 'Hello Skihat PHP MVC';
     }
 }

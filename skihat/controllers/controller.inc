@@ -33,7 +33,7 @@ interface IActionFilter {
      *
      * @return bool
      */
-    function invoke($actionMethod);
+    function invoke($actionMethod) : bool;
 
     /**
      * 使用$options参数，执行模板渲染前回调，如果返回true表示继续执行，false表示中断执行。

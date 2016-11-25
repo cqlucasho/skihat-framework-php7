@@ -48,7 +48,7 @@
  *
  * @return array
  */
-function validate_validators($input, array $validators, array $messages = array()) {
+function validate_validators($input, array $validators, array $messages = array()) : array {
     $errorMessages = array();
 
     foreach ($validators as $field => $fieldValidators) {
@@ -82,7 +82,7 @@ function validate_validators($input, array $validators, array $messages = array(
  *
  * @return bool
  */
-function required_validator(&$input, $field) {
+function required_validator(&$input, string $field) : bool {
     return !empty($input[$field]);
 }
 
@@ -94,7 +94,7 @@ function required_validator(&$input, $field) {
  *
  * @return bool
  */
-function numeric_validator(&$input, $field) {
+function numeric_validator(&$input, string $field) : bool {
     if (empty($input[$field])) return true;
     return is_numeric($input[$field]);
 }
@@ -110,7 +110,7 @@ function numeric_validator(&$input, $field) {
  *
  * @return bool
  */
-function telephone_validator(&$input, $field) {
+function telephone_validator(&$input, string $field) : bool {
     if (empty($input[$field])) return true;
     return preg_match('/^(\d{11})|(\d{3,4}-\d{7,8})|(400-(\d{3})-(\d{5}))$/', $input[$field]) != false;
 }
@@ -123,7 +123,7 @@ function telephone_validator(&$input, $field) {
  *
  * @return bool
  */
-function email_validator(&$input, $field) {
+function email_validator(&$input, string $field) : bool {
     if (empty($input[$field])) return true;
     return filter_var($input[$field], FILTER_VALIDATE_EMAIL) != false;
 }
@@ -136,7 +136,7 @@ function email_validator(&$input, $field) {
  *
  * @return bool
  */
-function url_validator(&$input, $field) {
+function url_validator(&$input, string $field) : bool {
     if (empty($input[$field])) return true;
     return filter_var($input[$field], FILTER_VALIDATE_URL) != false;
 }
@@ -149,7 +149,7 @@ function url_validator(&$input, $field) {
  *
  * @return bool
  */
-function ip_validator(&$input, $field) {
+function ip_validator(&$input, string $field) : bool {
     if (empty($input[$field])) return true;
     return filter_var($input[$field], FILTER_VALIDATE_IP) != false;
 }
@@ -163,7 +163,7 @@ function ip_validator(&$input, $field) {
  *
  * @return bool
  */
-function strmin_validator(&$input, $field, $length = 10) {
+function strmin_validator(&$input, string $field, int $length = 10) : bool {
     if (empty($input[$field])) return true;
     return mb_strlen($input[$field]) >= $length;
 }
@@ -177,7 +177,7 @@ function strmin_validator(&$input, $field, $length = 10) {
  *
  * @return bool
  */
-function strmax_validator(&$input, $field, $length = 32) {
+function strmax_validator(&$input, string $field, int $length = 32) : bool {
     if (empty($input[$field])) return true;
     return mb_strlen($input[$field]) <= $length;
 }
@@ -192,7 +192,7 @@ function strmax_validator(&$input, $field, $length = 32) {
  *
  * @return bool
  */
-function strlen_validator(&$input, $field, $range = array()) {
+function strlen_validator(&$input, string $field, array $range = array()) : bool {
     if (empty($input[$field])) return true;
 
     list($min, $max) = empty($range) ? array(10, 32) : $range;
@@ -210,7 +210,7 @@ function strlen_validator(&$input, $field, $range = array()) {
  *
  * @return bool
  */
-function nummax_validator(&$input, $field, $max = 10000) {
+function nummax_validator(&$input, string $field, int $max = 10000) : bool {
     if (empty($input[$field])) return true;
     return $input[$field] <= $max;
 }
@@ -224,7 +224,7 @@ function nummax_validator(&$input, $field, $max = 10000) {
  *
  * @return bool
  */
-function nummin_validator(&$input, $field, $min = 10) {
+function nummin_validator(&$input, string $field, int $min = 10) : bool {
     if (empty($input[$field])) return true;
     return $input[$field] >= $min;
 }
@@ -238,7 +238,7 @@ function nummin_validator(&$input, $field, $min = 10) {
  *
  * @return bool
  */
-function numrang_validator(&$input, $field, $range = array()) {
+function numrang_validator(&$input, string $field, array $range = array()) : bool {
     if (empty($input[$field])) return true;
 
     list($min, $max) = empty($range) ? array(10, 10000) : $range;
@@ -254,7 +254,7 @@ function numrang_validator(&$input, $field, $range = array()) {
  *
  * @return bool
  */
-function compare_validator(&$input, $field, $compare = '') {
+function compare_validator(&$input, string $field, string $compare = '') : bool {
     if (empty($input[$field]) || empty($compare)) return true;
 
     return $input[$field] == $input[$compare];
@@ -269,7 +269,7 @@ function compare_validator(&$input, $field, $compare = '') {
  *
  * @return bool
  */
-function regex_validator(&$input, $field, $pattern = '*') {
+function regex_validator(&$input, string $field, string $pattern = '*') : bool {
     if (empty($input[$field])) return true;
     return preg_match($pattern, $input[$field]) != false;
 }
@@ -277,13 +277,13 @@ function regex_validator(&$input, $field, $pattern = '*') {
 /**
  * 枚举验证器，如果验证字段值包含在$$options中，则返回true，否则返回false。
  *
- * @param  array|ArrayAccess $input   验证值参数。
- * @param  string            $field   验证字段。
- * @param array              $options 允许值范围。
+ * @param array|ArrayAccess $input   验证值参数。
+ * @param string            $field   验证字段。
+ * @param array             $options 允许值范围。
  *
  * @return bool
  */
-function enum_validator(&$input, $field, $options = array()) {
+function enum_validator(&$input, string $field, array $options = array()) : bool {
     if (empty($input[$field])) return true;
-    return in_array($input[$field], (array)$options);
+    return in_array($input[$field], $options);
 }

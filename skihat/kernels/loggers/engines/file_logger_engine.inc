@@ -43,7 +43,7 @@ class FileLoggerEngine implements ILoggerEngine {
     /**
      * @see LoggerEngine::write
      */
-    public function write($title, $message, $user = Logger::DEFAULT_USER) {
+    public function write(string $title, string $message, $user = Logger::DEFAULT_USER) {
         $this->_writeToFile($this->_templateMessage($title, $message, $user));
     }
 
@@ -52,7 +52,7 @@ class FileLoggerEngine implements ILoggerEngine {
      *
      * @param string $message 完整的消息信息。
      */
-    protected function _writeToFile($message) {
+    protected function _writeToFile(string $message) {
         file_put_contents($this->_fullFileName(), $message, FILE_APPEND);
     }
 
@@ -61,7 +61,7 @@ class FileLoggerEngine implements ILoggerEngine {
      *
      * @return string
      */
-    protected function _fullFileName() {
+    protected function _fullFileName() : string {
         return SKIHAT_PATH_DATA_LOGGERS . DIRECTORY_SEPARATOR . $this->fileName;
     }
 
@@ -74,7 +74,7 @@ class FileLoggerEngine implements ILoggerEngine {
      *
      * @return string
      */
-    protected function _templateMessage($title, $message, $user) {
+    protected function _templateMessage(string $title, string $message, string $user) : string {
         return str_replace(
             array('{:user}', '{:message}', '{:title}', '{:datetime}'),
             array($user, $message, $title, date('Y-m-d h:i:s')), $this->template);

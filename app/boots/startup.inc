@@ -14,8 +14,8 @@
  */
 
 # 0：关闭调试，1：启用缓存进行调试，2：开启全部调试。
-define('SKIHAT_DEBUG', 1);
-define('SKIHAT_DEBUG_CACHE', 1);
+define('SKIHAT_DEBUG', 2);
+define('SKIHAT_DEBUG_CACHE', 2);
 
 # 文件查询常量。
 define('SKIHAT_FILE_EXT', '.inc');
@@ -46,8 +46,8 @@ define('SKIHAT_PATH_DATA_RUNTIME', SKIHAT_PATH_DATA . '/runtime');
 
 # 库常量。
 define('SKIHAT_PATH_LIBRARY', SKIHAT_PATH_ROOT . '/skihat');
+define('SKIHAT_PATH_KERNEL', SKIHAT_PATH_ROOT . '/skihat/kernels');
 define('SKIHAT_PATH_VENDOR', SKIHAT_PATH_ROOT . '/vendor');
-
 
 # 消息常量。
 define('SKIHAT_MESSAGE_INFO', 'info');
