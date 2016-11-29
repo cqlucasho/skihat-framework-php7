@@ -31,7 +31,7 @@ Skihat::write('kernels/databases', array(
     'default' => array(
         SKIHAT_IOC_PATHS => SKIHAT_PATH_LIBRARY,
         SKIHAT_IOC_CLASS => 'kernels.databases.engines.mysql_pdo_engine',
-        'conf' => 'mysql:host=127.0.0.1;dbname=test&user=root&pass=killer&charset=utf8'
+        'conf' => 'mysql:host=127.0.0.1;dbname=test&user=root&pass=root&charset=utf8'
     )
 ));
 

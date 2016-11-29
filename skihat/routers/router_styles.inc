@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-08-02
- * @modified  2013-08-22
+ * @modified  2016-11-29
  */
 
 /**
@@ -65,7 +65,7 @@ abstract class AbstractRouterStyle implements IRouterStyle {
     /**
      * 根据当前实例域名信息返回相关的URL地址。
      */
-    protected function _domainUrl() {
+    protected function _domainUrl() : string {
         return $this->domain ? $this->domain . '/' : '/';
     }
 
@@ -76,7 +76,7 @@ abstract class AbstractRouterStyle implements IRouterStyle {
      *
      * @return string
      */
-    protected abstract function _pathUrl(array &$params);
+    protected abstract function _pathUrl(array &$params) : string;
 
     /**
      * 根据$params生成URL锚参数地址。
@@ -85,7 +85,7 @@ abstract class AbstractRouterStyle implements IRouterStyle {
      *
      * @return string
      */
-    protected function _anchorUrl(array &$params) {
+    protected function _anchorUrl(array &$params) : string {
         # 如果在参数中包含锚信息，则返回生成内容。
         if ($anchor = array_key_pop($params, SKIHAT_PARAM_ANCHOR)) {
             return '#' . urlencode($anchor);
@@ -109,7 +109,7 @@ class NormalRouterStyle extends AbstractRouterStyle {
     /**
      * @see AbstractRouter::_pathUr
      */
-    protected function _pathUrl(array &$params) {
+    protected function _pathUrl(array &$params) : string {
         return ($this->script != self::DEFAULT_SCRIPT) ? $this->script : '';
     }
 }
@@ -124,7 +124,7 @@ class RewriteRouterStyle extends AbstractRouterStyle {
     /**
      * @see AbstractRouterStyle::_pathUrl
      */
-    protected function _pathUrl(array &$params) {
+    protected function _pathUrl(array &$params) : string {
         # 如果在数组中包含重写参数。
         if ($rewriteUrl = array_key_pop($params, SKIHAT_PARAM_REWRITE)) {
             return $rewriteUrl;
@@ -148,7 +148,7 @@ class PathinfoRouterStyle extends AbstractRouterStyle {
     /**
      * @see AbstractRouterStyle::_pathUrl
      */
-    protected function _pathUrl(array &$params) {
+    protected function _pathUrl(array &$params) : string {
         # 如果当前包含重写参数，返回脚本名称＋重写参数。
         if ($rewriteUrl = array_key_pop($params, SKIHAT_PARAM_REWRITE)) {
             return $this->script . '/' . $rewriteUrl;

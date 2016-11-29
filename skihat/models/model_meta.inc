@@ -10,7 +10,7 @@
  * @version     1.0
  *
  * @created     2012-07-23
- * @modify      2013-09-03
+ * @modify      2016-11-29
  */
 
 /**
@@ -228,7 +228,7 @@ class ModelMeta {
      *
      * @param string $modelName 模型名称。
      */
-    protected function __construct($modelName) {
+    protected function __construct(string $modelName) {
         # 从模型中读取meta值。
         $this->_initialize($modelName);
         $this->_initializeProps();
@@ -244,7 +244,7 @@ class ModelMeta {
      *
      * @return ModelMeta
      */
-    public static function & instance($modelName) {
+    public static function & instance(string $modelName) : ModelMeta {
         # 如果指定的模型描述信息还没有加载进来。
         if (!isset(self::$_metas[$modelName])) {
             if (enable_cached()) {
@@ -269,7 +269,7 @@ class ModelMeta {
      *
      * @param string $modelName 模型名称。
      */
-    protected function _initialize($modelName) {
+    protected function _initialize(string $modelName) {
         $this->modelName = $modelName;
         $this->_config = (array)call_user_func(array($modelName, IModelMetaSupport::CONFIG_METHOD));
     }
@@ -311,7 +311,7 @@ class ModelMeta {
      *
      * @return array
      */
-    protected function _table($modelName, array & $config) {
+    protected function _table(string $modelName, array & $config) : array {
         # 从配置信息中读取配置选项。
         if (isset($config[IModelMetaSupport::META_TABLE])) {
             $table = $config[IModelMetaSupport::META_TABLE];
@@ -325,7 +325,7 @@ class ModelMeta {
             $tableAlias = pascal($modelName);
         }
 
-        return array($table, $tableAlias);
+        return [$table, $tableAlias];
     }
 
     /**
@@ -335,7 +335,7 @@ class ModelMeta {
      *
      * @return array
      */
-    protected function _primary(array & $config) {
+    protected function _primary(array & $config) : array {
         if (isset($config[IModelMetaSupport::META_PRIMARY_KEY])) {
             $key = $config[IModelMetaSupport::META_PRIMARY_KEY];
         } else {
@@ -348,7 +348,7 @@ class ModelMeta {
             $increment = true;
         }
 
-        return array($key, $increment);
+        return [$key, $increment];
     }
 
     /**
@@ -433,12 +433,12 @@ class ModelMeta {
     /**
      * 根据$type和$modelName获取默认的外键编号。
      *
-     * @param string  $type      连接类型。
-     * @param  string $linkTable 关系表名称。
+     * @param string $type      连接类型。
+     * @param string $linkTable 关系表名称。
      *
      * @return string
      */
-    protected function _defaultLinkForeign($type, $linkTable) {
+    protected function _defaultLinkForeign(string $type, string $linkTable) : string {
         switch ($type) {
             case IModelMetaSupport::BELONGS_TO:
                 return $linkTable . '_id';
@@ -457,7 +457,7 @@ class ModelMeta {
      *
      * @return string
      */
-    protected function _defaultLinkOn($type, $linkAlias, $linkKeyName, $foreign) {
+    protected function _defaultLinkOn(string $type, string $linkAlias, string $linkKeyName, string $foreign) : string {
         switch ($type) {
             case IModelMetaSupport::BELONGS_TO:
                 return sprintf('%s.%s = %s.%s', $this->tableAlias, $foreign, $linkAlias, $linkKeyName);
@@ -473,7 +473,7 @@ class ModelMeta {
      *
      * @return array
      */
-    protected function _defaultLinkTable(array & $linkCfg) {
+    protected function _defaultLinkTable(array & $linkCfg) : array {
         $tables = array($linkCfg[IModelMetaSupport::META_TABLE], $this->table);
         sort($tables, SORT_STRING);
 

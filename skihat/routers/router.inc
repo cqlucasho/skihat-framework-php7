@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-07-23
- * @modified  2013-08-28
+ * @modified  2016-11-29
  */
 
 # 导入预定的路由样式和路由规则。
@@ -57,7 +57,7 @@ class Router {
      *
      * @return Router
      */
-    public static function domain($domain) {
+    public static function domain($domain) : Router {
         # 如果当前域名的相关路由还不存在。
         if (isset(self::$_routers[$domain]) == false) {
             self::$_routers[$domain] = new Router($domain);
@@ -130,7 +130,7 @@ class Router {
      *
      * @param string $domain 域名。
      */
-    protected function __construct($domain) {
+    protected function __construct(string $domain) {
         $this->_domain = $domain;
     }
 
@@ -154,7 +154,7 @@ class Router {
      *
      * @return Router
      */
-    public function rule($rule, $names = false) {
+    public function rule($rule, $names = false) : Router {
         # 将规则增加到全局规则表中。
         $currRule = self::_addRule($this, $rule);
         # 附加到当前规则中链中去。
@@ -176,7 +176,7 @@ class Router {
      *
      * @return string
      */
-    protected function _reverseUrl(array $params) {
+    protected function _reverseUrl(array $params) : string {
         # 如果当前路由样式实例对象还没有创建，初始化实例。
         if (!$this->_objStyle) {
             $this->_objStyle = Skihat::ioc($this->_style);
@@ -220,7 +220,7 @@ class Router {
      * @param string $name 规则链名称。
      * @param mixed  $rule 规则引用地址。
      */
-    protected static function _addLinkRule($name, &$rule) {
+    protected static function _addLinkRule(string $name, &$rule) {
         # 如果当前链名称是第一次附加。
         if (isset(self::$_linkRules[$name]) == false) {
             self::$_linkRules[$name] = array($rule);
@@ -236,10 +236,10 @@ class Router {
      *
      * @return array
      */
-    protected static function & _linkRules($name) {
+    protected static function & _linkRules(string $name) : array {
         # 如果当前命名的规则不存在，则创建新的值。
         if (!isset(self::$_linkRules[$name])) {
-            self::$_linkRules[$name] = array();
+            self::$_linkRules[$name] = [];
         }
 
         return self::$_linkRules[$name];

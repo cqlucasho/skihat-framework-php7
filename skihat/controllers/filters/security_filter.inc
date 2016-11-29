@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2013-04-08
- * @modified  2013-09-18
+ * @modified  2016-11-28
  */
 
 Skihat::import('kernels.securities.security', SKIHAT_PATH_LIBRARY);
@@ -138,7 +138,7 @@ class SecurityFilter implements IActionFilter {
     /**
      * @see IActionFilter::invoke
      */
-    public function invoke($actionMethod) {
+    public function invoke(string $actionMethod) : bool {
         # 将用户标识设置给当前控制器。
         $this->_controller['identity'] = $this->identity();
 

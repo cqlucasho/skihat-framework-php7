@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-07-23
- * @modified  2013-08-11
+ * @modified  2016-11-28
  */
 
 /**
@@ -41,11 +41,11 @@ class ApplicationRequest {
      * 根据$name和$default获取查询字符串，如果指定$name不存在则返回$default值。
      *
      * @param string $name    GET参数名称。
-     * @param bool   $default 返回默认值，默认为false。
+     * @param string|bool   $default 返回默认值，默认为false。
      *
      * @return mixed
      */
-    public function query($name, $default = false) {
+    public function query(string $name, $default = false) {
         return isset($this->_params[$name]) ? $this->_params[$name] : $default;
     }
 
@@ -66,7 +66,7 @@ class ApplicationRequest {
      *
      * @return mixed
      */
-    public function form($name, $default = false) {
+    public function form(string $name, bool $default = false) {
         return isset($this->_forms[$name]) ? $this->_forms[$name] : $default;
     }
 
@@ -77,7 +77,7 @@ class ApplicationRequest {
      *
      * @return mixed
      */
-    public function file($name) {
+    public function file(string $name) {
         return isset($this->_files[$name]) ? $this->_files[$name] : false;
     }
 
@@ -140,11 +140,11 @@ class ApplicationRequest {
      * 根据$name参数，获取请求头信息，如果$name指定值不存在，返回$default值。
      *
      * @param string $name    名称。
-     * @param bool   $default 默认值，默认为false。
+     * @param mixed   $default 默认值，默认为false。
      *
      * @return mixed
      */
-    public static function header($name, $default = false) {
+    public static function header(string $name, $default = false) {
         $fulName = 'HTTP_' . strtolower($name);
         return empty($_SERVER[$fulName]) ? $_SERVER[$fulName] : $default;
     }

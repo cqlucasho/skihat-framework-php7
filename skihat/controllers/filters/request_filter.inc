@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2013-04-08
- * @modified  2013-09-18
+ * @modified  2016-11-28
  */
 
 /**
@@ -29,7 +29,7 @@ class RequestFilter implements IActionFilter {
     /**
      * @see IActionFilter::invoke
      */
-    public function invoke($actionMethod) {
+    public function invoke(string $actionMethod) : bool {
         return true;
     }
 

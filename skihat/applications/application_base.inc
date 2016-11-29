@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-07-23
- * @modified  2013-08-09
+ * @modified  2016-11-28
  */
 
 /**
@@ -131,7 +131,7 @@ abstract class ApplicationBase {
      *
      * @return ApplicationResponse
      */
-    public static function response() {
+    public static function response() : ApplicationResponse {
         return self::$_instance->response();
     }
 
@@ -216,7 +216,7 @@ abstract class ApplicationBase {
      *
      * @return string
      */
-    protected function _ctlFile() {
+    protected function _ctlFile() : string {
         $request = $this->_request;
 
         # 获取控制器名称，如果控制器指定时没有正确使用下划线将不能正确查询。
@@ -237,7 +237,7 @@ abstract class ApplicationBase {
     /**
      * 返回控制器所在路径信息。
      *
-     * @return string
+     * @return string|array
      */
     protected function _ctlPath() {
         return $this->_request->module() ? SKIHAT_PATH_APP_MODULES : array(SKIHAT_PATH_APP, SKIHAT_PATH_LIBRARY);
@@ -270,7 +270,7 @@ abstract class ApplicationBase {
      *
      * @return string
      */
-    protected function _errorMessage($type, $message, $file, $line) {
+    protected function _errorMessage($type, $message, $file, $line) : string {
         return sprintf('[%d]%s #%s(%d)', $type, $message, $file, $line);
     }
 
@@ -279,7 +279,7 @@ abstract class ApplicationBase {
      *
      * @return array
      */
-    protected function _basicParams() {
+    protected function _basicParams() : array {
         # 初始化路中默认参数值
         $basicParams = array(
             SKIHAT_PARAM_CONTROLLER => $this->_request->controller(),
@@ -317,7 +317,7 @@ abstract class ApplicationBase {
     /**
      * @return array 返回参数为未找到参数。
      */
-    protected function _notFoundParams() {
+    protected function _notFoundParams() : array {
         return array(
             SKIHAT_PARAM_CONTROLLER => 'not_found',
             SKIHAT_PARAM_ACTION => SKIHAT_PARAM_DEFAULT_ACTION,

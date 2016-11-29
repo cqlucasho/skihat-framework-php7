@@ -10,7 +10,7 @@
  * @version     1.0
  *
  * @create      2012-07-17
- * @modify      2013-09-05
+ * @modify      2016-11-29
  */
 
 # 将PdoEngine引入当前环境。
@@ -31,7 +31,7 @@ class MysqlPdoEngine extends PdoEngine {
     /**
      * @see PdoEngine::_fetchTableSchema
      */
-    protected function _fetchTableSchema(string $table) {
+    protected function _fetchTableSchema(string $table) : array {
         # 生成查询命令。
         $cmd = 'show columns from ' . $this->sqlBuilder->safeName($table);
         $columns = $this->query($cmd, array(), self::FETCH_STYLE_ASSOC);
@@ -46,7 +46,8 @@ class MysqlPdoEngine extends PdoEngine {
                 self::SCHEMA_SIZE => $size,
                 self::SCHEMA_NULL => $column['Null'] == 'NO' ? false : true,
                 self::SCHEMA_DEFAULT => $column['Default'],
-                self::SCHEMA_FORMATTER => false,);
+                self::SCHEMA_FORMATTER => false
+            );
         }
 
         return $schemas;
@@ -61,7 +62,7 @@ class MysqlPdoEngine extends PdoEngine {
      *
      * @throws DatabaseException 如果连接发生错误。
      */
-    protected function _createLink(array $conf) {
+    protected function _createLink(array $conf) : PDO {
         # 从配置中获取字符集
         $charset = array_key_pop($conf, self::CONF_CHARSET);
         $link = parent::_createLink($conf);
@@ -76,7 +77,7 @@ class MysqlPdoEngine extends PdoEngine {
     /**
      * @see PdoEngine::_createBuilder
      */
-    protected function _createBuilder() : MySqlBuilder {
+    protected function _createBuilder() : SqlBuilder {
         return new MySqlBuilder();
     }
 }

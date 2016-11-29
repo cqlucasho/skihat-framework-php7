@@ -10,7 +10,7 @@
  * @version     1.0
  *
  * @created     2012-07-23
- * @modify      2013-09-22
+ * @modify      2016-11-29
  */
 
 /**
@@ -30,7 +30,7 @@ class ModelFetch implements IDataSupport {
      * @param string $modelName 模型名称。
      * @param array  $syntax    查寻。
      */
-    public function __construct($modelName, array $syntax) {
+    public function __construct(string $modelName, array $syntax) {
         $this->_syntax = $syntax;
         $this->_modelName = $modelName;
     }
@@ -129,7 +129,7 @@ class ModelFetch implements IDataSupport {
      *
      * @return ModelFetch
      */
-    public function page($page, $size = self::DEFAULT_PAGE_SIZE) {
+    public function page(int $page, int $size = self::DEFAULT_PAGE_SIZE) : ModelFetch {
         if (empty($page)) {
             unset($this->_syntax[self::SYNTAX_PAGE]);
         } else {
@@ -196,12 +196,12 @@ class ModelFetch implements IDataSupport {
      *
      * @return array
      */
-    public function fetchList($fields = false) {
+    public function fetchList($fields = false) : array {
         # 如果指定有新的字段名称。
         if ($fields) $this->fields($fields);
 
         # 声明和获取值。
-        $list = array();
+        $list = [];
         $rows = $this->_fetchAll(self::FETCH_STYLE_NUM);
 
         foreach ($rows as $row) {
@@ -216,7 +216,7 @@ class ModelFetch implements IDataSupport {
      *
      * @return int
      */
-    public function fetchCount() {
+    public function fetchCount() : int {
         $modelName = $this->_modelName;
         $count = $modelName::fetchField('COUNT(*) AS COUNT', array(), $this->_syntax);
         return $count ? $count : 0;
@@ -230,7 +230,7 @@ class ModelFetch implements IDataSupport {
      *
      * @return mixed
      */
-    public function extra($name, $default = false) {
+    public function extra(string $name, $default = false) {
         if (isset($this->_extras[$name])) {
             return $this->_extras[$name];
         }
@@ -244,7 +244,7 @@ class ModelFetch implements IDataSupport {
      * @param string $name 附加值名字。
      * @param mixed  $val  附加值。
      */
-    public function addExtra($name, $val) {
+    public function addExtra(string $name, $val) {
         $this->_extras[$name] = $val;
     }
 
@@ -253,7 +253,7 @@ class ModelFetch implements IDataSupport {
      *
      * @param string $name 附加值名称。
      */
-    public function removeExtra($name) {
+    public function removeExtra(string $name) {
         unset($this->_extras[$name]);
     }
 
@@ -264,7 +264,7 @@ class ModelFetch implements IDataSupport {
      *
      * @return array
      */
-    protected function _fetchAll($fetchStyle = self::FETCH_STYLE_ASSOC) {
+    protected function _fetchAll(int $fetchStyle = self::FETCH_STYLE_ASSOC) {
         return $this->_database()->fetchAll($this->_syntax, $fetchStyle);
     }
 

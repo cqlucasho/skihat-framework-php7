@@ -10,7 +10,7 @@
  * @version     1.0
  *
  * @created     2012-07-23
- * @modify      2013-09-25
+ * @modify      2016-11-29
  */
 
 /**
@@ -106,11 +106,10 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      * @param mixed     $props          属性值。
      * @param bool      $forceUpdate    强制采用更新。
      * @param bool      $forceLoad      强制从数据库中加载属性。
-     * @param string    $primaryKey     重新指定主键标识。
      *
      * @throws ModelException,ModelNotFoundException
      */
-    public function __construct($props = array(), $forceUpdate = FALSE, $forceLoad = FALSE) {
+    public function __construct($props = array(), bool $forceUpdate = FALSE, bool $forceLoad = FALSE) {
         # 重新指定主键标识
         $this->_resetKey();
         # 获取当前模型的数据KEY声明。
@@ -144,7 +143,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    public function isNew() {
+    public function isNew() : bool {
         return $this->_status == self::MODEL_NEW;
     }
 
@@ -153,7 +152,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    public function isUpdate() {
+    public function isUpdate() : bool {
         return $this->_status == self::MODEL_UPDATE;
     }
 
@@ -162,7 +161,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    public function isDelete() {
+    public function isDelete() : bool {
         return $this->_status == self::MODEL_DELETE;
     }
 
@@ -173,7 +172,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return mixed
      */
-    public function __get($field) {
+    public function __get(string $field) {
         return $this->_readProp($field);
     }
 
@@ -183,7 +182,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      * @param string $field 属性名称。
      * @param mixed  $value 属性值。
      */
-    public function __set($field, $value) {
+    public function __set(string $field, $value) {
         $this->_writeProp($field, $value);
     }
 
@@ -231,7 +230,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return mixed
      */
-    public function originalProp($prop) {
+    public function originalProp(string $prop) {
         return isset($this->_originalProps[$prop]) ? $this->_originalProps[$prop] : NULL;
     }
 
@@ -240,7 +239,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public function originalProps() {
+    public function originalProps() : array {
         return $this->_originalProps;
     }
 
@@ -249,7 +248,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public function currentProps() {
+    public function currentProps() : array {
         return $this->_currentProps;
     }
 
@@ -258,7 +257,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return string
      */
-    public function json() {
+    public function json() : string {
         return json_encode($this->_currentProps);
     }
 
@@ -280,7 +279,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    public function validate($onRule = false, array &$syntax = array()) {
+    public function validate($onRule = false, array &$syntax = array()) : bool {
         # 根据状态获取验证方法
         if (!$onRule) {
             $onRule = $this->isNew() ? self::CREATE_RULES : self::UPDATE_RULES;
@@ -337,7 +336,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @throws ModelException 如果删除模型为非更新模型。
      */
-    public function delete(array $syntax = array()) {
+    public function delete(array $syntax = array()) : bool {
         # 如果当前状态不是更新，则直接引发异常。
         if (!$this->isUpdate()) {
             throw new ModelException('Model:Delete not update models.');
@@ -360,12 +359,12 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      * 使用$prop和$error增加字段的错误消息。
      *
      * @param string $prop  属性名字。
-     * @param string $error 错误消息。
+     * @param array $error 错误消息。
      */
-    public function addError($prop, $error) {
+    public function addError(string $prop, array $error) {
         # 如果指定属性未已经包含错误信息；
         if (!isset($this->_errors[$prop])) {
-            $this->_errors[$prop] = (array)$error;
+            $this->_errors[$prop] = $error;
         } else {
             $this->_errors[$prop] = array_merge($this->_errors[$prop], $error);
         }
@@ -378,8 +377,8 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return string|mixed
      */
-    public function error($prop) {
-        return isset($this->_errors[$prop]) ? $this->_errors[$prop] : false;
+    public function error(string $prop) {
+        return $this->_errors[$prop] ?? false;
     }
 
     /**
@@ -387,7 +386,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public function allErrors() {
+    public function allErrors() : array {
         return $this->_errors;
     }
 
@@ -398,7 +397,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return $this 返回当前模型。
      */
-    public function clearErrors($errors = array()) {
+    public function clearErrors(array $errors = array()) {
         # 如果初始化错误是为数组；
         if (is_array($errors)) {
             $this->_errors = $errors;
@@ -412,8 +411,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
     /**
      * 重新指定模型的主键标识。
      */
-    protected function _resetKey() {
-
+    public function _resetKey() {
     }
 
     /**
@@ -423,7 +421,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    protected function _create(array &$syntax) {
+    protected function _create(array &$syntax) : bool {
         # 如果执行创建前回调方法成功，则继续执行。
         if ($this->_createBefore($syntax) !== FALSE) {
             if (!$this->validate(false, $syntax)) return false;
@@ -459,7 +457,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    protected function _createInvoke(array &$syntax) {
+    protected function _createInvoke(array &$syntax) : bool {
         # 只读属性
         $meta = & self::meta();
         if (isset($meta->schemas['created']) && !isset($this->_currentProps['created'])) {
@@ -501,7 +499,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    protected function _update(array &$syntax) {
+    protected function _update(array &$syntax) : bool {
         # 执行更新回调用方法。
         if ($this->_updateBefore($syntax) !== FALSE) {
             if (!$this->validate(false, $syntax)) return false;
@@ -533,7 +531,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @param array $syntax 更新语法。
      *
-     * @return bool
+     * @return mixed
      */
     protected function _updateInvoke(array &$syntax) {
         # 获取当前属性，并去除更新主键值。
@@ -581,7 +579,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @param array $syntax 删除命令语法。
      *
-     * @return bool
+     * @return mixed
      */
     protected function _deleteInvoke(array &$syntax) {
         return self::database()->delete(self::defaultSyntax($syntax, array(self::primaryKey() => $this->key())));
@@ -607,7 +605,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool
      */
-    protected function _validateInvoke($onRule, array &$syntax) {
+    protected function _validateInvoke($onRule, array &$syntax) : bool {
         # 如果验证类还未引用，则引用类。
         if (!function_exists('validate_validators')) {
             Skihat::import('kernels.validators', SKIHAT_PATH_LIBRARY);
@@ -667,7 +665,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public static function createModels(array $modelRows, array $syntax) {
+    public static function createModels(array $modelRows, array $syntax) : array {
         $modelAlias = $syntax[self::SYNTAX_TABLE_ALIAS];
         $modelLinks = self::_createModelLinks($syntax);
         $modelName = get_called_class();
@@ -681,7 +679,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
                 # 如果记录集中包含有这个列的记录值，则生成关系模型对象。
                 $relAlias = $link[self::SYNTAX_TABLE_ALIAS];
                 # 生成模型对象时，是否使用强制更新
-                $forceUpdate = isset($link[Model::META_LINKS_FORCE_UPDATE]) ? $link[Model::META_LINKS_FORCE_UPDATE] : true;
+                $forceUpdate = $link[Model::META_LINKS_FORCE_UPDATE] ?? true;
 
                 if (isset($row[$relAlias])) {
                     $relationModel = $link['relModel'];
@@ -716,7 +714,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return int
      */
-    public static function createAll(array $fields, array $syntax = array()) {
+    public static function createAll(array $fields, array $syntax = array()) : int {
         return self::database()->create($fields, self::defaultSyntax($syntax));
     }
 
@@ -729,7 +727,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return mixed
      */
-    public static function createMultiple(array $fields, array $values, $syntax = array()) {
+    public static function createMultiple(array $fields, array $values, $syntax = array()) : int {
         return self::database()->createMultiple($fields, $values, self::defaultSyntax($syntax));
     }
 
@@ -742,7 +740,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return int 影响的记录数。
      */
-    public static function updateAll($fields, $conditions, array $syntax = array()) {
+    public static function updateAll($fields, $conditions, array $syntax = array()) : int {
         return self::database()->update($fields, self::defaultSyntax($syntax, $conditions));
     }
 
@@ -754,7 +752,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return int 响应的记录数。
      */
-    public static function deleteAll($conditions, array $syntax = array()) {
+    public static function deleteAll($conditions, array $syntax = array()) : int {
         return self::database()->delete(self::defaultSyntax($syntax, $conditions));
     }
 
@@ -766,7 +764,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return ModelFetch
      */
-    public static function fetchAll($conditions = array(), array $syntax = array()) {
+    public static function fetchAll($conditions = array(), array $syntax = array()) : ModelFetch {
         return new ModelFetch(get_called_class(), self::defaultSyntax($syntax, $conditions));
     }
 
@@ -779,7 +777,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return mixed
      */
-    public static function fetchField($field, $conditions, array $syntax = array()) {
+    public static function fetchField(string $field, $conditions, array $syntax = array()) {
         $syntax = self::defaultSyntax($syntax, $conditions);
         $syntax[self::SYNTAX_FIELDS] = $field;
 
@@ -794,7 +792,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return boolean
      */
-    public function fetchUnique($field) {
+    public function fetchUnique(string $field) : bool {
         # 如果字段的值为空，直接返回true。
         if (empty($this->_currentProps[$field])) return true;
 
@@ -842,7 +840,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public static function query($cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC) {
+    public static function query(string $cmd, array $args = array(), $fetchStyle = self::FETCH_STYLE_ASSOC) {
         return self::database()->query($cmd, $args, $fetchStyle);
     }
 
@@ -854,7 +852,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return int
      */
-    public static function execute($cmd, array $args = array()) {
+    public static function execute(string $cmd, array $args = array()) : int {
         return self::database()->execute($cmd, $args);
     }
 
@@ -866,7 +864,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return bool|array
      */
-    public static function validateRule($onRule, Model $model) {
+    public static function validateRule(string $onRule, Model $model) {
         # 如果指定$onRule包含验证器，则调用验证组件进行验证。
         if ($validators = array_key_value(self::meta()->validators, $onRule)) {
             return validate_validators($model->_currentProps, $validators, self::meta()->validatorMessages);
@@ -892,7 +890,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    public static function defaultSyntax(array $syntax = array(), $conditions = FALSE) {
+    public static function defaultSyntax(array $syntax = array(), $conditions = FALSE) : array {
         # 获取表名称和别名。
         $meta = self::meta();
         $syntax[self::SYNTAX_JOIN] = $meta->links;
@@ -932,7 +930,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @throws ModelNotFoundException
      */
-    protected function _initializeForceLoad($keyName, $key, array $props = array()) {
+    protected function _initializeForceLoad(string $keyName, $key, array $props = array()) {
         # 根据主键条件生成查询语法，并并指定返回值。
         $syntax = self::defaultSyntax(array(), array($keyName => $key));
         $syntax[self::SYNTAX_PAGE] = array(1, 1);
@@ -953,7 +951,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      * @param array $props  当前属性。
      * @param int   $status 当前状态。
      */
-    public function _initializeProps(array $props, $status = self::MODEL_NEW) {
+    public function _initializeProps(array $props, int $status = self::MODEL_NEW) {
         $this->_originalProps = $props;
         $this->_currentProps = $props;
 
@@ -967,7 +965,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return mixed
      */
-    protected function _readProp($prop) {
+    protected function _readProp(string $prop) {
         # 如果当前属性中设置有相关值。
         if (isset($this->_currentProps[$prop])) {
             return $this->_currentProps[$prop];
@@ -992,7 +990,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      * @param string $prop  属性名称。
      * @param mixed  $value 属性值。
      */
-    protected function _writeProp($prop, $value) {
+    protected function _writeProp(string $prop, $value) {
         $meta = self::meta();
 
         if (in_array($prop, $meta->virtual)) {
@@ -1009,7 +1007,7 @@ abstract class Model implements ArrayAccess, IModelMetaSupport {
      *
      * @return array
      */
-    protected static function _createModelLinks(array &$syntax) {
+    protected static function _createModelLinks(array &$syntax) : array {
         # 初始化已有的连接关系。
         $links = array();
 

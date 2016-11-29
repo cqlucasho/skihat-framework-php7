@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-07-23
- * @modified  2013-08-25
+ * @modified  2016-11-29
  */
 
 /**
@@ -108,7 +108,7 @@ abstract class AbstractRouterRule implements IRouterRule {
      * @param string $name 参数名称。
      * @param mixed  $val  参数选项。
      */
-    public function __set($name, $val) {
+    public function __set(string $name, $val) {
         # 将值转换为数组格式。
         $val = (array)$val;
 
@@ -307,7 +307,7 @@ class RegexRouterRule extends AbstractRouterRule {
      *
      * @return array
      */
-    protected function _parseMore($more) {
+    protected function _parseMore(string $more) {
         # 如果更多值的第一个值为'/'值。
         $more = explode(self::MORE_SEPARATOR, $more);
         $length = count($more);

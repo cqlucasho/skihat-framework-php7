@@ -10,7 +10,7 @@
  * @version     1.0
  *
  * @create      2012-10-07
- * @modify      2013-09-24
+ * @modify      2016-11-29
  */
 
 /**
@@ -142,7 +142,7 @@ class HasAndBelongsModelFetch extends ModelFetch {
      * @param array  $syntax    语法。
      * @param Model  $model     相关模型。
      */
-    public function __construct($modelName, $syntax, $model) {
+    public function __construct(string $modelName, array $syntax, Model $model) {
         parent::__construct($modelName, $syntax);
         $this->model = $model;
     }
@@ -150,7 +150,7 @@ class HasAndBelongsModelFetch extends ModelFetch {
     /**
      * 附加新的关系模型实例。
      */
-    public function add($models) {
+    public function add(array $models) {
         if (empty($models)) return 0;
 
         $syntax = $this->_syntax;
@@ -159,10 +159,10 @@ class HasAndBelongsModelFetch extends ModelFetch {
             $syntax[IModelMetaSupport::META_LINKS_TABLE_FOREIGN]
         );
 
-        $values = array();
+        $values = [];
         $key = $this->model->key();
-        foreach ((array)$models as $model) {
-            $values[] = array($key, $model);
+        foreach ($models as $model) {
+            $values[] = [$key, $model];
         }
 
         return $this->_database()->createMultiple($fields, $values, array(
@@ -182,7 +182,7 @@ class HasAndBelongsModelFetch extends ModelFetch {
     /**
      * 替换关系模型实例。
      */
-    public function replace($models) {
+    public function replace(array $models) {
         $syntax = $this->_syntax;
         $database = $this->_database();
 
@@ -193,12 +193,12 @@ class HasAndBelongsModelFetch extends ModelFetch {
         } else {
             $rows = $database->delete(array(self::SYNTAX_TABLE => $syntax[IModelMetaSupport::META_LINKS_TABLE],
                 self::SYNTAX_WHERE => array($syntax[IModelMetaSupport::META_LINKS_FOREIGN] => $this->model->key(),
-                    $syntax[IModelMetaSupport::META_LINKS_TABLE_FOREIGN] . ' NOT IN ' => new NormalParameter('(' . implode(',', (array)$models) . ')'))));
+                    $syntax[IModelMetaSupport::META_LINKS_TABLE_FOREIGN] . ' NOT IN ' => new NormalParameter('(' . implode(',', $models) . ')'))));
 
             $dbKeys = $database->fetchAll(array(self::SYNTAX_TABLE => $syntax[IModelMetaSupport::META_LINKS_TABLE],
                 self::SYNTAX_FIELDS => array($syntax[IModelMetaSupport::META_LINKS_FOREIGN])), self::FETCH_STYLE_COLUMN);
 
-            $models = array_diff((array)$models, array_keys($dbKeys));
+            $models = array_diff($models, array_keys($dbKeys));
             return $rows + $this->add($models);
         }
     }

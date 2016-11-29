@@ -33,7 +33,7 @@ interface IActionFilter {
      *
      * @return bool
      */
-    function invoke($actionMethod) : bool;
+    function invoke(string $actionMethod) : bool;
 
     /**
      * 使用$options参数，执行模板渲染前回调，如果返回true表示继续执行，false表示中断执行。
@@ -73,7 +73,7 @@ class ActionFilters {
      *
      * @return bool
      */
-    public function invoke($actionMethod) {
+    public function invoke(string $actionMethod) : bool {
         # 从过滤器集合中获取过滤器，并执行方法。
         foreach ($this->_actionFilters as $filter) {
             if (false === $filter->invoke($actionMethod)) {
@@ -91,7 +91,7 @@ class ActionFilters {
      *
      * @return bool
      */
-    public function render(array &$options) {
+    public function render(array &$options) : bool {
         # 从过滤器集合中，获取过滤器，并执行渲染方法。
         foreach ($this->_actionFilters as $filter) {
             if (false === $filter->render($options)) {
@@ -119,7 +119,7 @@ class ActionFilters {
      *
      * @return IActionFilter
      */
-    public function filter($name) {
+    public function filter(string $name) : IActionFilter {
         return $this->_actionFilters[$name];
     }
 
@@ -190,7 +190,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return mixed
      */
-    public function query($name, $default = false) {
+    public function query(string $name, $default = false) {
         return $this->request->query($name, $default);
     }
 
@@ -202,7 +202,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return mixed
      */
-    public function form($name, $default = false) {
+    public function form(string $name, $default = false) {
         return $this->request->form($name, $default);
     }
 
@@ -213,7 +213,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return array|bool
      */
-    public function file($name) {
+    public function file(string $name) {
         return $this->request->file($name);
     }
 
@@ -248,7 +248,7 @@ abstract class Controller extends CollectionBase {
     /**
      * 根据$options渲染控制器的执行结果，如果$options为字符串表示指定活动选项。
      *
-     * @param array $options 渲染选项。
+     * @param array|string $options 渲染选项。
      */
     public function render($options = array()) {
         # 关闭自动渲染
@@ -273,7 +273,7 @@ abstract class Controller extends CollectionBase {
      * @param array  $actions 相关活动。
      * @param string $message 完整通知消息。
      */
-    public function message($title, $sign = SKIHAT_MESSAGE_INFO, $actions = array(), $message = '') {
+    public function message(string $title, string $sign = SKIHAT_MESSAGE_INFO, $actions = array(), string $message = '') {
         $this->_message = array('title' => $title, 'sign' => $sign, 'actions' => $actions, 'message' => $message);
     }
 
@@ -284,11 +284,11 @@ abstract class Controller extends CollectionBase {
      * @param bool         $full  是否使用完整URL匹配。
      * @param int          $delay 延迟时间（秒）。
      */
-    public function redirect($url, $full = false, $delay = 0) {
+    public function redirect($url, bool $full = false, int $delay = 0) {
         if (is_array($url)) {
             $url[Router::FULL_URL] = $full;
             $url = Router::url($url);
-        } else if (strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0 && $url[0] !== '/') {
+        } else if (mb_strpos($url, 'http://') !== 0 && mb_strpos($url, 'https://') !== 0 && $url[0] !== '/') {
             $url = Router::url(array(SKIHAT_PARAM_ACTION => $url, Router::FULL_URL => $full));
         }
 
@@ -303,7 +303,7 @@ abstract class Controller extends CollectionBase {
      *
      * @param string $text 文本消息。
      */
-    public function text($text) {
+    public function text(string $text) {
         $this['text'] = $text;
         $this->_ctlTpl('text');
     }
@@ -324,7 +324,7 @@ abstract class Controller extends CollectionBase {
      * @param mixed  $jsonp       响应内容。
      * @param string $contentType 响应内容类型。
      */
-    public function jsonp($jsonp, $contentType = 'json/application') {
+    public function jsonp($jsonp, string $contentType = 'json/application') {
         $this['jsonp'] = $jsonp;
         $this['contentType'] = $contentType;
 
@@ -369,7 +369,7 @@ abstract class Controller extends CollectionBase {
     /**
      * 返回一个Ioc配置，提供视图类型配置信息（默认为Theme)。
      */
-    public function actionView() {
+    public function actionView() : array {
         return array(
             SKIHAT_IOC_CLASS => self::DEFAULT_VIEW_CLASS,
             SKIHAT_IOC_PATHS => SKIHAT_PATH_LIBRARY
@@ -429,7 +429,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return string
      */
-    protected function _actionMethod() {
+    protected function _actionMethod() : string {
         return camel_upper($this->request->action()) . 'Action';
     }
 
@@ -476,7 +476,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return bool
      */
-    protected function _invokeFilters($actionMethod) {
+    protected function _invokeFilters(string $actionMethod) : bool {
         return $this->_filters->invoke($actionMethod);
     }
 
@@ -487,7 +487,7 @@ abstract class Controller extends CollectionBase {
      *
      * @return bool
      */
-    protected function _renderFilters(array &$options) {
+    protected function _renderFilters(array &$options) : bool {
         return $this->_filters->render($options);
     }
 
@@ -503,7 +503,7 @@ abstract class Controller extends CollectionBase {
      *
      * @param string $method 方法名称。
      */
-    protected function _ctlTpl($method) {
+    protected function _ctlTpl(string $method) {
         $this->render(array(
             SKIHAT_PARAM_MODULE => false,
             SKIHAT_PARAM_PACKAGE => false,

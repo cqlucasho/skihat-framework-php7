@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-07-23
- * @modified  2013-08-11
+ * @modified  2016-11-28
  */
 
 /**
@@ -25,7 +25,7 @@ class ApplicationResponse {
      * @param string $name  参数名称。
      * @param mixed  $value 参数值。
      */
-    public function header($name, $value) {
+    public function header(string $name, $value) {
         $this->_headers[$name] = $value;
     }
 
@@ -44,7 +44,7 @@ class ApplicationResponse {
      * @param int  $minute 缓存分钟数，默认为30分钟。
      * @param bool $lasted 最后修改时间，默认为false。
      */
-    public function enableCache($minute = 30, $lasted = false) {
+    public function enableCache(int $minute = 30, bool $lasted = false) {
         # 设置缓存值。
         $timestamp = $minute * 60;
         if (!$lasted) $lasted = time();
@@ -87,7 +87,7 @@ class ApplicationResponse {
      *
      * @return string
      */
-    public function contentType($contentType = null) {
+    public function contentType(string $contentType = null) {
         # 如果内容类型为非false值，设置内容类型。
         if ($contentType) {
             $this->_contentType = $contentType;
@@ -170,8 +170,8 @@ class ApplicationResponse {
     /**
      * 根据$name和$value参数，打印输出响应头。
      *
-     * @param string $name  头名称。
-     * @param mixed  $value 响应值。
+     * @param string|array  $name  头名称。
+     * @param mixed         $value 响应值。
      */
     protected function _printHeader($name, $value) {
         if (is_array($value)) {

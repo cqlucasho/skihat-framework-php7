@@ -11,7 +11,7 @@
  * @version   1.0
  *
  * @created   2013-04-08
- * @modified  2013-09-18
+ * @modified  2016-11-28
  */
 
 /**
@@ -45,7 +45,7 @@ class CacheFilter implements IActionFilter {
     /**
      * @see IActionFilter::invoke
      */
-    public function invoke($actionMethod) {
+    public function invoke(string $actionMethod) : bool {
         # 如果不允许缓存，直接返回。
         if (!$this->_enableCached($actionMethod)) return true;
 
@@ -86,7 +86,7 @@ class CacheFilter implements IActionFilter {
      *
      * @return bool
      */
-    protected function _enableCached($actionMethod) {
+    protected function _enableCached(string $actionMethod) : bool {
         # 如果当前不开启缓存或请求方法不为GET请求。
         if (!enable_cached() || client_method() != 'get') return false;
         if ($this->actionMethods == '*') return true;
@@ -100,7 +100,7 @@ class CacheFilter implements IActionFilter {
      *
      * @return string
      */
-    function _cacheName() {
+    function _cacheName() : string {
         $all = $this->_controller->request->queryAll();
         return 'cache-filter-' . implode('-', array_keys($all)) . '-' . implode('-', $all);
     }

@@ -12,7 +12,9 @@ class TestSuites extends PHPUnit_Framework_TestSuite {
         $this->addTestFile('skihat/kernels/loggers/LoggerTest.php');
         $this->addTestFile('skihat/kernels/medias/MediaTest.php');
         $this->addTestFile('skihat/kernels/messages/MessageTest.php');
-        $this->addTestFile('skihat/kernels/securities/SecurityTest.php');
+        //$this->addTestFile('skihat/kernels/securities/SecurityTest.php');
+        $this->addTestFile('skihat/applications/ApplicationRequestTest.php');
+        $this->addTestFile('skihat/models/ModelTest.php');
     }
 
     //注意此处设置为static

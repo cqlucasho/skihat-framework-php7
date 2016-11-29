@@ -10,7 +10,7 @@
  * @version   1.0
  *
  * @created   2012-08-14
- * @modified  2013-08-18
+ * @modified  2016-11-29
  */
 
 /**
@@ -102,7 +102,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @param string $layout 布局文件名称。
      */
-    public function layout($layout) {
+    public function layout(string $layout) {
         $this->_layout = $layout;
     }
 
@@ -126,8 +126,8 @@ class Theme extends CollectionBase implements IView {
      * @param string $name    占位符名称。
      * @param mixed  $default 默认值。
      */
-    public function place($name, $default = '') {
-        echo isset($this->_places[$name]) ? $this->_places[$name] : $default;
+    public function place(string $name, $default = '') {
+        echo $this->_places[$name] ?? $default;
     }
 
     /**
@@ -136,7 +136,7 @@ class Theme extends CollectionBase implements IView {
      * @param string      $text  文本内容。
      * @param bool|string $place 占位符名称。
      */
-    public function inflateText($text, $place = false) {
+    public function inflateText(string $text, $place = false) {
         if ($place) {
             $this->_places[$place] = $text;
         } else {
@@ -178,7 +178,7 @@ class Theme extends CollectionBase implements IView {
      * @param string $file    文件名称。
      * @param array  $options 选项。
      */
-    public function inflateFile($file, $options = array()) {
+    public function inflateFile(string $file, $options = array()) {
         # 填充基本的选项信息。
         $options = $this->_inflateOptions($options);
 
@@ -204,7 +204,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @param string $place 占位符名称。
      */
-    public function beginPlace($place) {
+    public function beginPlace(string $place) {
         if ($this->_currPlace) {
             $this->endPlace();
         }
@@ -234,7 +234,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _inflateOptions($options) {
+    protected function _inflateOptions($options) : array {
         # 如果选项为字符串。
         if (is_string($options)) {
             return array(self::OPT_PLACE => $options, self::OPT_CACHE => false);
@@ -266,7 +266,7 @@ class Theme extends CollectionBase implements IView {
      * @throws FileNotFoundException
      * @return string
      */
-    protected function _inflateFile($file) {
+    protected function _inflateFile(string $file) : string {
         # 获取基础路径。
         $paths = $this->_basePaths();
 
@@ -292,7 +292,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return string
      */
-    protected function _inflateTemplate($file) {
+    protected function _inflateTemplate(string $file) : string {
         # 生成三个局部变量，方便在模板中调用。
         $context = $this->_context;
         $request = $this->request;
@@ -343,7 +343,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _defaultHelperPaths() {
+    protected function _defaultHelperPaths() : array {
         $allPaths = array();
 
         if ($theme = $this->theme) {
@@ -366,7 +366,7 @@ class Theme extends CollectionBase implements IView {
      * @throws FileNotFoundException 如果布局文件没有找到。
      * @return string
      */
-    protected function _locateLayout() {
+    protected function _locateLayout() : string {
         $allPaths = $this->_layoutPaths();
 
         if ($file = Skihat::locate($this->_layout, $allPaths, self::TEMPLATE_EXT)) {
@@ -381,7 +381,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _layoutPaths() {
+    protected function _layoutPaths() : array {
         # 如果布局路径还没有获取到，则获取布局模板。
         if (!$this->_layoutPaths) {
             $this->_layoutPaths = $this->_defaultLayoutPaths();
@@ -395,7 +395,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _defaultLayoutPaths() {
+    protected function _defaultLayoutPaths() : array {
         # 声明路径参数。
         $allPaths = array();
 
@@ -416,7 +416,7 @@ class Theme extends CollectionBase implements IView {
     /**
      * 获取当前视图的模板文件。
      */
-    protected function _locateTemplates() {
+    protected function _locateTemplates() : string {
         $paths = $this->_templatePaths();
         $templates = $this->_templateFiles();
 
@@ -434,7 +434,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _templatePaths() {
+    protected function _templatePaths() : array {
         # 如果模板路径还没有进行查询，查找模板路径。
         if (!$this->_templatePaths) {
             $this->_templatePaths = $this->_defaultTemplatePaths();
@@ -448,7 +448,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _defaultTemplatePaths() {
+    protected function _defaultTemplatePaths() : array {
         $allPaths = array();
 
         if ($module = $this->_options[SKIHAT_PARAM_MODULE]) {
@@ -489,7 +489,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _defaultTemplateFiles() {
+    protected function _defaultTemplateFiles() : array {
         # 生成模板初始化信息。
         $template = $this->_options[SKIHAT_PARAM_CONTROLLER];
         if ($package = $this->_options[SKIHAT_PARAM_PACKAGE]) {
@@ -525,7 +525,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _basePaths() {
+    protected function _basePaths() : array {
         # 如果还没有生成基础地址，则生成地址。
         if (!$this->_basePaths) {
             $this->_basePaths = $this->_defaultBasePaths();
@@ -539,7 +539,7 @@ class Theme extends CollectionBase implements IView {
      *
      * @return array
      */
-    protected function _defaultBasePaths() {
+    protected function _defaultBasePaths() : array {
         # 如果在选项中饮食基础路径。
         if (isset($this->_options[self::OPT_BASE_PATHS])) {
             return (array)$this->_options[self::OPT_BASE_PATHS];
